@@ -9,6 +9,8 @@ import org.vkedco.wavelets.haar.OneDHaar;
  * Some examples and solutions to exercises from Ch. 01 of
  * "Wavlets Made Easy" by Yves Nievergelt.
  * 
+ *  More documentation at http://vkedco.blogspot.com/2014/07/1d-and-2d-haar-wavelet-transforms-in.html.
+ * 
  * Bugs to vladimir dot kulyukin at gmail dot com.
  * ============================================================
  */
