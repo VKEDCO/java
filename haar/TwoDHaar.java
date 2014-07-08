@@ -648,5 +648,5 @@ public class TwoDHaar {
             TwoDHaar.inPlaceFastInverseHaarWaveletTransformAt(sample, tlx+half_size, tly, half_size);
             TwoDHaar.inPlaceFastInverseHaarWaveletTransformAt(sample, tlx+half_size, tly+half_size, half_size);
         }
-    }
+    } 
 }
