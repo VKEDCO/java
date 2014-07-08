@@ -24,9 +24,13 @@ import java.util.Random;
  * {{1, 0},
  *  {0, 1}}
  * 
- * Then HC is the left half (1 + 0) minus the right half (0 + 1) divided by 4, i.e., (1 - 1)/2 = 0.
- * VC is the upper half (1 + 0) minus the lower half (0 + 1) divided by 4, i.e., (1-1)/2 = 0.
- * DC is the 1st diagonal (1 + 1) minus the second diagonal (0+0) divided by 4 = (2-0)/2 = 0.5.
+ * Then HC is the sum total of the the left half (1 + 0) minus the sum total of the right half (0 + 1) 
+ * divided by 4, i.e., (1 - 1)/4 = 0. In other words, the sum total of the left column minus the sum 
+ * total of the right column divided by the size of the sample.
+ * VC is the sum total of the upper half (1 + 0) minus the sum total of the lower half (0 + 1) divided 
+ * by 4, i.e., (1-1)/2 = 0. In other words, the sum total of the first row minus the sum total
+ * of the second row divided by the size of the sample. DC is the sum total of the 1st diagonal (1 + 1) 
+ * minus the sum total of the second diagonal (0+0) divided by 4 = (2-0)/2 = 0.5.
  * 
  * Suppose the sample is
  * 
