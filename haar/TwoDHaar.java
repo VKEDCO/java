@@ -350,9 +350,9 @@ public class TwoDHaar {
     }
    
     // Apply 2D Inverse Fast Haar Wavelet Transform on the ordered haar transfrom for a specific number of iterations.
-    public static void orderedFastInverseHaarWaveletTransformForNumIters(ArrayList<double[][]> transform_transform, int num_iters) {
+    public static void orderedFastInverseHaarWaveletTransformForNumIters(ArrayList<double[][]> ordered_transform, int num_iters) {
         for(int L = 0; L < num_iters; L++) {
-            TwoDHaar.orderedFastInverseHaarWaveletTransformOnce(transform_transform);
+            TwoDHaar.orderedFastInverseHaarWaveletTransformOnce(ordered_transform);
         }
     }
      
