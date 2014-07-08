@@ -37,21 +37,21 @@ public class OneDHaar {
         if ( sample.length == 0 || sample.length == 1 ) return;
         if ( OneDHaar.isPowerOf2(sample.length) == false) return;
         final int num_sweeps = (int)(Math.log(sample.length)/Math.log(2));
-        inPlaceFastHaarWaveletTransformForNumSweeps(sample, num_sweeps);
+        inPlaceFastHaarWaveletTransformForNumIters(sample, num_sweeps);
     }
     
     // apply in-place fast haar wavelet transform for num_sweeps sweeps.
-    public static void inPlaceFastHaarWaveletTransformForNumSweeps(double[] sample, int num_sweeps) {
+    public static void inPlaceFastHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
         if ( sample.length == 0 || sample.length == 1 ) return;
         if ( OneDHaar.isPowerOf2(sample.length) == false) return;
         int I = 1; // index increment
         int GAP_SIZE = 2; // number of elements b/w averages
         int NUM_SAMPLE_VALS = sample.length; // number of values in the sample
         final int n = (int) (Math.log(NUM_SAMPLE_VALS) / Math.log(2));
-        if (num_sweeps < 1 || num_sweeps > n) return;
+        if (num_iters < 1 || num_iters > n) return;
         double a = 0;
         double c = 0;
-        for (int SWEEP_NUM = 1; SWEEP_NUM <= num_sweeps; SWEEP_NUM++) {
+        for (int ITER_NUM = 1; ITER_NUM <= num_iters; ITER_NUM++) {
             NUM_SAMPLE_VALS /= 2;
             for (int K = 0; K < NUM_SAMPLE_VALS; K++) {
                 a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2;
