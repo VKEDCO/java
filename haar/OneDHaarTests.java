@@ -186,7 +186,7 @@ public class OneDHaarTests {
         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, 1);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 1);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 1);
         System.out.print("Original ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -202,7 +202,7 @@ public class OneDHaarTests {
         OneDHaar.orderedFastInverseHaarWaveletTransform(sample);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 1);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 1);
         System.out.print("Transformed ");
         OneDHaar.displaySample(sample);
     }
@@ -215,7 +215,7 @@ public class OneDHaarTests {
         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, 1);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 1);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 1);
         System.out.print("Transformed ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -229,7 +229,7 @@ public class OneDHaarTests {
         OneDHaar.orderedFastInverseHaarWaveletTransform(sample);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 1);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 1);
         System.out.print("Transformed ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -243,7 +243,7 @@ public class OneDHaarTests {
         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, 2);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 2);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 2);
         System.out.print("Transformed ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -275,7 +275,7 @@ public class OneDHaarTests {
         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, 2);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 2);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 2);
         System.out.print("Original ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -307,7 +307,7 @@ public class OneDHaarTests {
         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, 3);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 3);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 3);
         System.out.print("Original ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -339,7 +339,7 @@ public class OneDHaarTests {
         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, 3);
         System.out.print("Inverted ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 3);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 3);
         System.out.print("Original ");
         OneDHaar.displaySample(sample);
         System.out.println();
@@ -371,7 +371,7 @@ public class OneDHaarTests {
         OneDHaar.reconstructSampleTransformedInPlaceForNumItersWithOutput(sample, 2);
         System.out.print("Reconstructed ");
         OneDHaar.displaySample(sample);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(sample, 2);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(sample, 2);
         System.out.print("Transformed ");
         OneDHaar.displaySample(sample);
     }
@@ -462,7 +462,7 @@ public class OneDHaarTests {
     public static void creakWaterTemperatureAnalysisInPlace() {
         double[] temperature_sample = {32, 10, 20, 38, 37, 28, 38, 34, 
                                        18, 24, 18,  9, 23, 24, 28, 34};
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(temperature_sample, 4);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(temperature_sample, 4);
         System.out.print("Transformed "); OneDHaar.displaySample(temperature_sample);
         OneDHaar.displayOrderedFreqsFromInPlaceHaar(temperature_sample);
     }
@@ -525,7 +525,7 @@ public class OneDHaarTests {
                                  43.0, 41.0, 41.0, 38.0, 36.0, 47.1, 34.0, 32.0};
         double[] frost_depths_copy = new double[16];
         System.arraycopy(frost_depths, 0, frost_depths_copy, 0, 16);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(frost_depths, 4);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(frost_depths, 4);
         System.out.print("In-Place Transformed "); OneDHaar.displaySample(frost_depths);
         System.out.println("Ordered Freqs from In-Place Haar");
         OneDHaar.displayOrderedFreqsFromInPlaceHaar(frost_depths);
@@ -550,7 +550,7 @@ public class OneDHaarTests {
                                  40.0, 41.3, 41.3, 42.0, 43.0, 45.0, 35.5, 49.0};
         double[] frost_depths_copy = new double[16];
         System.arraycopy(frost_depths, 0, frost_depths_copy, 0, 16);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(frost_depths, 4);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(frost_depths, 4);
         System.out.print("In-Place Transformed "); OneDHaar.displaySample(frost_depths);
         System.out.println("Ordered Freqs from In-Place Haar");
         OneDHaar.displayOrderedFreqsFromInPlaceHaar(frost_depths);
@@ -567,7 +567,7 @@ public class OneDHaarTests {
                                 16.0, 15.0, 13.0, 11.0, 6.4, 9.0, 19.0, 118.0};
         double[] frost_depths_copy = new double[16];
         System.arraycopy(river_flows, 0, frost_depths_copy, 0, 16);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumSweeps(river_flows, 4);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(river_flows, 4);
         System.out.print("In-Place Transformed "); OneDHaar.displaySample(river_flows);
         System.out.println("Ordered Freqs from In-Place Haar");
         OneDHaar.displayOrderedFreqsFromInPlaceHaar(river_flows);
@@ -581,7 +581,9 @@ public class OneDHaarTests {
      
      
      public static void main(String[] args) {
-         OneDHaarTests.example_1_21_p29();
+         double[] sample = {4, 2, -1, -3};
+         OneDHaar.inPlaceFastInverseHaarWaveletTransform(sample);
+         OneDHaar.displaySample(sample);
      }
      
     
