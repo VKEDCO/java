@@ -41,6 +41,8 @@ import java.util.Random;
  * VC = ((255 + 100) - (150 + 250))/4 = 13.75
  * DC = ((255 + 250) - (100 + 50))/4 = 88.75
  * 
+ * More documentation at http://vkedco.blogspot.com/2014/07/1d-and-2d-haar-wavelet-transforms-in.html.
+ * 
  * Bugs to vladimir dot kulyukin at gmail dot com
  * ==================================================================
  */
