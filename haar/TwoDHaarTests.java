@@ -9,6 +9,8 @@ import org.vkedco.wavelets.haar.TwoDHaar;
  * 
  * Tests of 2D ordered and inplace fast haar wavelet transforms.
  * 
+ * More documentation at http://vkedco.blogspot.com/2014/07/1d-and-2d-haar-wavelet-transforms-in.html.
+ * 
  * Bugs to vladimir dot kulyukin at gmail dot com
  * ===============================================================
  */
