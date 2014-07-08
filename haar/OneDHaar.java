@@ -9,6 +9,8 @@ package org.vkedco.wavelets.haar;
  * Haar Wavelet Transform, Inplace Fast Haar Wavelet Transform, and Inplace Fast Inverse 
  * Haar Wavelet Transform as specified in Ch. 01 of "Wavelets Made Easy" by Yves Nievergelt.
  * 
+ *  More documentation at http://vkedco.blogspot.com/2014/07/1d-and-2d-haar-wavelet-transforms-in.html.
+ * 
  * Bugs to vladimir dot kulyukin at gmail dot com
  * ============================================================================
  */
