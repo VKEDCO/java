@@ -9,8 +9,6 @@ package org.vkedco.wavelets.haar;
  * Haar Wavelet Transform, Inplace Fast Haar Wavelet Transform, and Inplace Fast Inverse 
  * Haar Wavelet Transform as specified in Ch. 01 of "Wavelets Made Easy" by Yves Nievergelt.
  * 
- *  More documentation at http://vkedco.blogspot.com/2014/07/1d-and-2d-haar-wavelet-transforms-in.html.
- * 
  * Bugs to vladimir dot kulyukin at gmail dot com
  * ============================================================================
  */
@@ -88,7 +86,7 @@ public class OneDHaar {
      public static void orderedFastHaarWaveletTransform(double[] sample) {
         final int n = sample.length;
         // if n is not an integral power of 2, then return
-        if (n % 2 != 0) return;
+        if ( !OneDHaar.isPowerOf2(n) ) return;
         // compute the number of sweeps; e.g., if n = 8, then NUM_SWEEPS is 3.
         final int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
         double acoeff, ccoeff;
@@ -151,23 +149,23 @@ public class OneDHaar {
     
     public static void orderedFastInverseHaarWaveletTransform(double[] sample) {
         int n = sample.length;
-        if (n < 2 || n % 2 != 0) return;
+        if (n < 2 || !OneDHaar.isPowerOf2(n) ) return;
         n = (int) (Math.log(n) / Math.log(2.0));
-        double a0 = 0; double a1 = 0; double[] vals = null;
+        double a0 = 0; double a1 = 0; double[] restored_vals = null;
         int GAP = 0; int j = 0;
         for (int L = 1; L <= n; L++) {
-            GAP = (int)(Math.pow(2.0, L-1));
-            j = 0;
-            vals = null;
-            vals = new double[2*GAP];
+            GAP = (int)(Math.pow(2.0, L-1)); // GAP b/w averages and coefficients at level L
+            restored_vals = null;
+            restored_vals = new double[2*GAP]; // restored values at level L
             for(int i = 0; i < GAP; i++) {
                 a0 = sample[i] + sample[GAP+i];
                 a1 = sample[i] - sample[GAP+i];
-                vals[j] = a0;
-                vals[j+1] = a1;
-                j += 2;
+                restored_vals[2*i]   = a0;
+                restored_vals[2*i+1] = a1;
             }
-            System.arraycopy(vals, 0, sample, 0, 2*GAP);
+            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            //      sample[0], sampe[1], ..., sample[2*GAP-1]
+            System.arraycopy(restored_vals, 0, sample, 0, 2*GAP);
         } 
     }
     
@@ -194,7 +192,7 @@ public class OneDHaar {
     // be computed completely.
     public static void inPlaceFastInverseHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
         int n = sample.length;
-        if (n % 2 != 0 || n == 0) {
+        if ( n < 2 || !OneDHaar.isPowerOf2(n) ) {
             return;
         }
         n = (int) (Math.log(n) / Math.log(2.0));
@@ -221,7 +219,7 @@ public class OneDHaar {
 
     public static void doNthIterOfInPlaceFastInverseHaarWaveletTransform(double[] sample, int iter_number) {
         int n = sample.length;
-        if (n % 2 != 0 || n == 0) {
+        if ( n < 2 || !OneDHaar.isPowerOf2(n) ) {
             return;
         }
         n = (int) (Math.log(n) / Math.log(2.0));
@@ -244,7 +242,7 @@ public class OneDHaar {
     // by applying fast inverse haar transform a given number of iterations.
     public static void reconstructSampleTransformedInPlaceForNumIters(double[] haar_transformed_sample, int num_iters) {
         int n = haar_transformed_sample.length;
-        if (n % 2 != 0 || n == 0) {
+        if ( n < 2 || !OneDHaar.isPowerOf2(n) ) {
             return;
         }
         n = (int) (Math.log(n) / Math.log(2.0));
@@ -272,7 +270,7 @@ public class OneDHaar {
     // sweep.
     public static void reconstructSampleTransformedInPlaceForNumItersWithOutput(double[] haar_transformed_sample, int num_iters) {
         int n = haar_transformed_sample.length;
-        if (n % 2 != 0 || n == 0) {
+        if ( n < 2 || !OneDHaar.isPowerOf2(n) ) {
             return;
         }
         n = (int) (Math.log(n) / Math.log(2.0));
@@ -302,7 +300,9 @@ public class OneDHaar {
     // transform.  
     public static void displayOrderedFreqsFromOrderedHaar(double[] ordered_sample) {
         int n = ordered_sample.length;
-        if ( n == 0 || n % 2 != 0 ) return;
+        if ( n < 2 || !OneDHaar.isPowerOf2(n) ) {
+            return;
+        }
         n = (int)(Math.log(n)/Math.log(2));
         System.out.println(ordered_sample[0]);
         int start = 1;
@@ -323,7 +323,9 @@ public class OneDHaar {
     public static void displayOrderedFreqsFromInPlaceHaar(double[] in_place_sample) {
         int n = in_place_sample.length;
         //System.out.println("N = " + n);
-        if (n % 2 != 0 || n == 0) { return; }
+        if ( n < 2 || !OneDHaar.isPowerOf2(n) ) {
+            return;
+        }
         if ( n == 2 ) {
             System.out.println(in_place_sample[0]);
             System.out.println(in_place_sample[1]);
