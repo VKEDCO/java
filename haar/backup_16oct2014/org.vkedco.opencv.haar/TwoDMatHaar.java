@@ -139,30 +139,30 @@ public class TwoDMatHaar {
 	
 	 // N = 2^n
     public static EDGE_TYPE detectEdgeType(double[][] pixels, int n, double theta_HAA, double theta_VAA, double theta_DAA) {
-    ArrayList<double[][]> transform = TwoDHaar.orderedFastHaarWaveletTransformForNumIters(pixels, n, n-1);
-    double[][] horizontals = TwoDHaar.getHorizontalsFromOrderedList(transform);
-    double[][] verticals = TwoDHaar.getVerticalsFromOrderedList(transform);
-    double[][] diagonals = TwoDHaar.getDiagonalsFromOrderedList(transform);
-    double HAA = TwoDHaar.computeAbsAvrg(horizontals, 2);
-    double VAA = TwoDHaar.computeAbsAvrg(verticals, 2);
-    double DAA = TwoDHaar.computeAbsAvrg(diagonals, 2);
+    	ArrayList<double[][]> transform = TwoDHaar.orderedFastHaarWaveletTransformForNumIters(pixels, n, n-1);
+    	double[][] horizontals = TwoDHaar.getHorizontalsFromOrderedList(transform);
+    	double[][] verticals = TwoDHaar.getVerticalsFromOrderedList(transform);
+    	double[][] diagonals = TwoDHaar.getDiagonalsFromOrderedList(transform);
+    	double HAA = TwoDHaar.computeAbsAvrg(horizontals, 2);
+    	double VAA = TwoDHaar.computeAbsAvrg(verticals, 2);
+    	double DAA = TwoDHaar.computeAbsAvrg(diagonals, 2);
    
-    horizontals = null;
-    verticals = null;
-    diagonals = null;
+    	horizontals = null;
+    	verticals = null;
+    	diagonals = null;
    
-    if ( HAA >= theta_HAA && VAA < theta_VAA && DAA < theta_DAA ) {
-    return EDGE_TYPE.VER;
-    }
-    else if ( VAA >= theta_VAA && HAA < theta_HAA && DAA < theta_DAA ) {
-    return EDGE_TYPE.HOR;
-    }
-    else if ( ( HAA >= theta_HAA && VAA >= theta_VAA ) || DAA >= theta_DAA ) {
-    return EDGE_TYPE.DIG;
-    }
-    else {
-    return EDGE_TYPE.NONE;
-    }
+    	if ( HAA >= theta_HAA && VAA < theta_VAA && DAA < theta_DAA ) {
+    	return EDGE_TYPE.VER;
+    	}
+    	else if ( VAA >= theta_VAA && HAA < theta_HAA && DAA < theta_DAA ) {
+    	return EDGE_TYPE.HOR;
+    	}
+    	else if ( ( HAA >= theta_HAA && VAA >= theta_VAA ) || DAA >= theta_DAA ) {
+    	return EDGE_TYPE.DIG;
+    	}
+    	else {
+    	return EDGE_TYPE.NONE;
+    	}
     }
     
     public static HaarWaveletWinStats computeWaveletWinStats(double[][] pixels, int log2_window_size, 
@@ -328,39 +328,39 @@ public class TwoDMatHaar {
     
     public static EdgeStats detectEdgeStats(double[][] pixels, int n, double theta_HAA, double theta_VAA, double theta_DAA ) {
    
-    ArrayList<double[][]> transform = TwoDHaar.orderedFastHaarWaveletTransformForNumIters(pixels, n, n-1);
-    double[][] horizontals = TwoDHaar.getHorizontalsFromOrderedListFinal(transform);
-    double[][] verticals = TwoDHaar.getVerticalsFromOrderedListFinal(transform);
-    double[][] diagonals = TwoDHaar.getDiagonalsFromOrderedListFinal(transform);
+    	ArrayList<double[][]> transform = TwoDHaar.orderedFastHaarWaveletTransformForNumIters(pixels, n, n-1);
+    	double[][] horizontals = TwoDHaar.getHorizontalsFromOrderedListFinal(transform);
+    	double[][] verticals = TwoDHaar.getVerticalsFromOrderedListFinal(transform);
+    	double[][] diagonals = TwoDHaar.getDiagonalsFromOrderedListFinal(transform);
    
-    /*double[][] horizontals = TwoDHaar.getHorizontalsFromOrderedList(transform);
-    double[][] verticals = TwoDHaar.getVerticalsFromOrderedList(transform);
-    double[][] diagonals = TwoDHaar.getDiagonalsFromOrderedList(transform);*/
+    	/*double[][] horizontals = TwoDHaar.getHorizontalsFromOrderedList(transform);
+    	double[][] verticals = TwoDHaar.getVerticalsFromOrderedList(transform);
+    	double[][] diagonals = TwoDHaar.getDiagonalsFromOrderedList(transform);*/
 
    
-    double HAA = TwoDHaar.computeAbsAvrg(horizontals, 2);
-    double HRA = TwoDHaar.computeAvrg(horizontals, 2);
-    double VAA = TwoDHaar.computeAbsAvrg(verticals, 2);
-    double VRA = TwoDHaar.computeAvrg(verticals, 2);
-    double DAA = TwoDHaar.computeAbsAvrg(diagonals, 2);
-    double DRA = TwoDHaar.computeAvrg(diagonals, 2);
+    	double HAA = TwoDHaar.computeAbsAvrg(horizontals, 2);
+    	double HRA = TwoDHaar.computeAvrg(horizontals, 2);
+    	double VAA = TwoDHaar.computeAbsAvrg(verticals, 2);
+    	double VRA = TwoDHaar.computeAvrg(verticals, 2);
+    	double DAA = TwoDHaar.computeAbsAvrg(diagonals, 2);
+    	double DRA = TwoDHaar.computeAvrg(diagonals, 2);
    
-    horizontals = null;
-    verticals = null;
-    diagonals = null;
+    	horizontals = null;
+    	verticals = null;
+    	diagonals = null;
    
-    if ( HAA >= theta_HAA && VAA < theta_VAA && DAA < theta_DAA ) {
-    return new EdgeStats(EDGE_TYPE.VER, HAA, HRA, VAA, VRA, DAA, DRA);
-    }
-    else if ( VAA >= theta_VAA && HAA < theta_HAA && DAA < theta_DAA ) {
-    return new EdgeStats(EDGE_TYPE.HOR, HAA, HRA, VAA, VRA, DAA, DRA);
-    }
-    else if ( ( HAA >= theta_HAA && VAA >= theta_VAA ) || DAA >= theta_DAA ) {
-    return new EdgeStats(EDGE_TYPE.DIG, HAA, HRA, VAA, VRA, DAA, DRA);
-    }
-    else {
-    return new EdgeStats(EDGE_TYPE.NONE, HAA, HRA, VAA, VRA, DAA, DRA);
-    }
+    	if ( HAA >= theta_HAA && VAA < theta_VAA && DAA < theta_DAA ) {
+    		return new EdgeStats(EDGE_TYPE.VER, HAA, HRA, VAA, VRA, DAA, DRA);
+    	}
+    	else if ( VAA >= theta_VAA && HAA < theta_HAA && DAA < theta_DAA ) {
+    		return new EdgeStats(EDGE_TYPE.HOR, HAA, HRA, VAA, VRA, DAA, DRA);
+    	}
+    	else if ( ( HAA >= theta_HAA && VAA >= theta_VAA ) || DAA >= theta_DAA ) {
+    	return new EdgeStats(EDGE_TYPE.DIG, HAA, HRA, VAA, VRA, DAA, DRA);
+    	}
+    	else {
+    	return new EdgeStats(EDGE_TYPE.NONE, HAA, HRA, VAA, VRA, DAA, DRA);
+    	}
     }
     
     
