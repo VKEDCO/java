@@ -618,6 +618,18 @@ public class TwoDHaar {
         }
     }
     
+    public static double[][] getHorizontalsFromOrderedListFinal(ArrayList<double[][]> ordered_ht_list) {
+        return ordered_ht_list.get(ordered_ht_list.size()-1-3);
+    }
+    
+    public static double[][] getVerticalsFromOrderedListFinal(ArrayList<double[][]> ordered_ht_list) {
+    return ordered_ht_list.get(ordered_ht_list.size()-1-2);
+    }
+    
+    public static double[][] getDiagonalsFromOrderedListFinal(ArrayList<double[][]> ordered_ht_list) {
+    return ordered_ht_list.get(ordered_ht_list.size()-1-1);
+    }
+    
     // apply the inverse 2D Haar transform to the size x size sample. size is an integral power of 2.
     public static void inPlaceFastInverseHaarWaveletTransform(double[][] sample, int size) {
         inPlaceFastInverseHaarWaveletTransformAt(sample, 0, 0, size);
