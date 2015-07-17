@@ -147,6 +147,54 @@ public class OneDHaar {
         sample[1] = ccoeff;
     }
     
+    // same as above but does ordered FHWT for a specified number of iterations
+    public static void orderedFastHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
+        final int n = sample.length;
+        // if n is not an integral power of 2, then return
+        if ( !OneDHaar.isPowerOf2(n) ) return;
+        // compute the number of sweeps; e.g., if n = 8, then NUM_SWEEPS is 3.
+        final int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
+        if ( num_iters > NUM_SWEEPS ) return;
+        double acoeff, ccoeff;
+        if ( NUM_SWEEPS == 1 ) {
+            acoeff = (sample[0] + sample[1]) / 2.0;
+            ccoeff = (sample[0] - sample[1]) / 2.0;
+            sample[0] = acoeff;
+            sample[1] = ccoeff;
+            return;
+        }
+        double[] acoeffs;
+        double[] ccoeffs;
+        for (int SWEEP_NUM = 1; SWEEP_NUM <= num_iters; SWEEP_NUM++) {
+            // size is the number of a-coefficients and c-coefficients at
+            // sweep SWEEP_NUM. for example, if the sample has 8 elements;
+            // at sweep 1, we have 4 a-coefficients and 4 c-coefficients;
+            // at sweep 2, we have 2 a-coefficients and 2 c-coefficients;
+            // at sweep 3, we have 1 a-coefficient and 1 c-coefficient.
+            int size = (int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM)); 
+            acoeffs = new double[size]; // where we place a-coefficients
+            ccoeffs = new double[size]; // where we place c-coefficients
+            int ai = 0; // index over acoeffs
+            int ci = 0; // index over ccoeffs
+            // end is the index of the last a-coefficient in sample[] at
+            // sweep SWEEP_NUM. For example, if NUM_SWEEPS = 3, then
+            // at sweep 1, end = 2^{3-1+1} - 1 = 7
+            // at sweep 2, end = 2^{3-2+1} - 1 = 3
+            int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
+            for (int i = 0; i <= end; i += 2) {
+                acoeffs[ai++] = (sample[i] + sample[i + 1]) / 2.0;
+                ccoeffs[ci++] = (sample[i] - sample[i + 1]) / 2.0;
+            }
+            
+            for (int i = 0; i < size; i++) {
+                sample[i] = acoeffs[i];
+                sample[i + size] = ccoeffs[i];
+            }
+            //System.out.print("Fordward SWEEP_NUM: " + NUM_SWEEPS + " ");
+            //OneDHaar.displaySample(sample);
+        }
+    }
+    
     public static void orderedFastInverseHaarWaveletTransform(double[] sample) {
         int n = sample.length;
         if (n < 2 || !OneDHaar.isPowerOf2(n) ) return;
@@ -167,6 +215,39 @@ public class OneDHaar {
             //      sample[0], sampe[1], ..., sample[2*GAP-1]
             System.arraycopy(restored_vals, 0, sample, 0, 2*GAP);
         } 
+    }
+    
+    // same as above but does ordered FHWT for a specific number of iters.
+    public static void orderedFastInverseHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
+        int n = sample.length;
+        if (n < 2 || !OneDHaar.isPowerOf2(n)) {
+            return;
+        }
+        n = (int) (Math.log(n) / Math.log(2.0));
+        if (num_iters > n) {
+            return;
+        }
+        double a0 = 0;
+        double a1 = 0;
+        double[] restored_vals = null;
+        int GAP = 0;
+        int j = 0;
+        for (int L = 1; L <= num_iters; L++) {
+            GAP = (int) (Math.pow(2.0, L - 1)); // GAP b/w averages and coefficients at level L
+            restored_vals = null;
+            restored_vals = new double[2 * GAP]; // restored values at level L
+            for (int i = 0; i < GAP; i++) {
+                a0 = sample[i] + sample[GAP + i];
+                a1 = sample[i] - sample[GAP + i];
+                restored_vals[2 * i] = a0;
+                restored_vals[2 * i + 1] = a1;
+            }
+            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            //      sample[0], sampe[1], ..., sample[2*GAP-1]
+            System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
+            //System.out.print("Inverse SWEEP_NUM: " + L + " ");
+            //OneDHaar.displaySample(sample);
+        }
     }
     
     public static void inPlaceFastInverseHaarWaveletTransform(double[] sample) {
