@@ -580,9 +580,60 @@ public class OneDHaarTests {
         System.out.println("Ordered Freqs from Ordered Haar");
         OneDHaar.displayOrderedFreqsFromOrderedHaar(frost_depths_copy);
     }
+    
+    static void testOrderedFHWTForNumIters(double[] sample) {
+        int n = (int)(Math.log(sample.length)/Math.log(2.0));
+        double[] copy_sample = new double[sample.length];
+        System.arraycopy(sample, 0, copy_sample, 0, sample.length);
+         for(int i = 1; i <= n; i++) {
+             System.out.println("num iters " + i);
+             System.out.print("Original: "); OneDHaar.displaySample(sample);
+             OneDHaar.orderedFastHaarWaveletTransformForNumIters(sample, i);
+             System.out.print("Transformed: "); OneDHaar.displaySample(sample);
+             OneDHaar.orderedFastInverseHaarWaveletTransformForNumIters(sample, i);
+             System.out.println("Reversed: "); OneDHaar.displaySample(sample);
+             for(int j = 0; j < sample.length; j++) {
+                 if ( sample[j] != copy_sample[j] ) {
+                     System.out.println("FALSE");
+                     return;
+                 }
+             }
+             System.out.println("TRUE");
+         }
+     }
      
+    static void testNormalizedOrderedFHWT(double[] sample) {
+        int n = (int)(Math.log(sample.length)/Math.log(2.0));
+        double[] copy_sample = new double[sample.length];
+        OneDHaar.displaySample(sample);
+        OneDHaar.orderedNormalizedFastHaarWaveletTransform(sample);
+        OneDHaar.displaySample(sample);
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransform(sample);
+        OneDHaar.displaySample(sample);
+     }
      
-     public static void main(String[] args) {
+    static void testNormalizedOrderedFHWTForNumIters(double[] sample, double thresh) {
+        int n = (int)(Math.log(sample.length)/Math.log(2.0));
+        double[] copy_sample = new double[sample.length];
+        System.arraycopy(sample, 0, copy_sample, 0, sample.length);
+         for(int i = 1; i <= n; i++) {
+             System.out.println("num iters " + i);
+             System.out.print("Original: "); OneDHaar.displaySample(sample);
+             OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sample, i);
+             System.out.print("Transformed: "); OneDHaar.displaySample(sample);
+             OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(sample, i);
+             System.out.println("Reversed: "); OneDHaar.displaySample(sample);
+             for(int j = 0; j < sample.length; j++) {
+                 if ( Math.abs(sample[j] - copy_sample[j]) > thresh ) {
+                     System.out.println("FALSE");
+                     return;
+                 }
+             }
+             System.out.println("TRUE");
+         }
+     }
+     
+    public static void main(String[] args) {
          double[] sample = {4, 2, -1, -3};
          OneDHaar.inPlaceFastInverseHaarWaveletTransform(sample);
          OneDHaar.displaySample(sample);
