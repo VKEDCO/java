@@ -217,7 +217,7 @@ public class OneDHaar {
         } 
     }
     
-    // same as above but does ordered FHWT for a specific number of iters.
+       // same as above but does ordered FHWT for a specific number of iters.
     public static void orderedFastInverseHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
         int n = sample.length;
         if (n < 2 || !OneDHaar.isPowerOf2(n)) {
@@ -230,15 +230,91 @@ public class OneDHaar {
         double a0 = 0;
         double a1 = 0;
         double[] restored_vals = null;
-        int GAP = 0;
+        int GAP = (int)(Math.pow(2.0, n-num_iters));
         int j = 0;
         for (int L = 1; L <= num_iters; L++) {
-            GAP = (int) (Math.pow(2.0, L - 1)); // GAP b/w averages and coefficients at level L
+            //GAP = (int) (Math.pow(2.0, num_iters-1)); // GAP b/w averages and coefficients at level L
+            //System.out.println("GAP == " + GAP);
             restored_vals = null;
             restored_vals = new double[2 * GAP]; // restored values at level L
             for (int i = 0; i < GAP; i++) {
                 a0 = sample[i] + sample[GAP + i];
                 a1 = sample[i] - sample[GAP + i];
+                //System.out.println("a0 = " + "sample[" + i + "] + sample[" + GAP + "]");
+                //System.out.println("a1 = " + "sample[" + i + "] - sample[" + GAP + "]");
+                restored_vals[2 * i] = a0;
+                restored_vals[2 * i + 1] = a1;
+                //System.out.println("restored_vals[" + (2 * i) + "] = " + a0);
+                //System.out.println("restored_vals[" + (2 * i + 1) + "] = " + a1);
+            }
+            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            //      sample[0], sampe[1], ..., sample[2*GAP-1]
+            System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
+            //System.out.print("Inverse SWEEP_NUM: " + L + " ");
+            //OneDHaar.displaySample(sample);
+            GAP *= 2;
+        }
+    }
+    
+    // as specified on p. 21 in "Ripples in Mathematics."
+    public static void orderedNormalizedFastInverseHaarWaveletTransform(double[] sample) {
+        int n = sample.length;
+        if (n < 2 || !OneDHaar.isPowerOf2(n)) {
+            return;
+        }
+        n = (int) (Math.log(n) / Math.log(2.0));
+        double a0 = 0;
+        double a1 = 0;
+        double[] restored_vals = null;
+        int GAP = 0;
+        int j = 0;
+        for (int L = 1; L <= n; L++) {
+            GAP = (int) (Math.pow(2.0, L - 1)); // GAP b/w averages and coefficients at level L
+            restored_vals = null;
+            restored_vals = new double[2 * GAP]; // restored values at level L
+            for (int i = 0; i < GAP; i++) {
+                double d = IDNORM * sample[GAP + i];
+                double s = ISNORM * sample[i];
+                //a0 = ISNORM * sample[i] + IDNORM * sample[GAP + i];
+                //a1 = ISNORM * sample[i] - IDNORM * sample[GAP + i]/2.0;
+                a0 = s + d/2;
+                a1 = s - d/2;
+                restored_vals[2 * i] = a0;
+                restored_vals[2 * i + 1] = a1;
+            }
+            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            //      sample[0], sampe[1], ..., sample[2*GAP-1]
+            System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
+            //System.out.print("L == " + L + " ");
+            //OneDHaar.displaySample(sample);
+        }
+    }
+    
+    // same as orderedNormalizedFastInverseHaarWaveletTransform() but goes back for a specified number of iterations.
+    public static void orderedNormalizedFastInverseHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
+        int n = sample.length;
+        if (n < 2 || !OneDHaar.isPowerOf2(n)) {
+            return;
+        }
+        n = (int) (Math.log(n) / Math.log(2.0));
+        if (num_iters > n) {
+            return;
+        }
+        double a0 = 0;
+        double a1 = 0;
+        double[] restored_vals = null;
+        int GAP = (int)(Math.pow(2.0, n-num_iters));
+        int j = 0;
+        for (int L = 1; L <= num_iters; L++) {
+            restored_vals = null;
+            restored_vals = new double[2 * GAP]; // restored values at level L
+            for (int i = 0; i < GAP; i++) {
+                double d = IDNORM * sample[GAP + i];
+                double s = ISNORM * sample[i];
+                //a0 = ISNORM * sample[i] + IDNORM * sample[GAP + i];
+                //a1 = ISNORM * sample[i] - IDNORM * sample[GAP + i]/2.0;
+                a0 = s + d/2;
+                a1 = s - d/2;
                 restored_vals[2 * i] = a0;
                 restored_vals[2 * i + 1] = a1;
             }
@@ -247,8 +323,10 @@ public class OneDHaar {
             System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
             //System.out.print("Inverse SWEEP_NUM: " + L + " ");
             //OneDHaar.displaySample(sample);
+            GAP *= 2;
         }
     }
+    
     
     public static void inPlaceFastInverseHaarWaveletTransform(double[] sample) {
         int n = sample.length;
