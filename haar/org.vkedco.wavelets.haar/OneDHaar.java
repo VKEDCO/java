@@ -710,4 +710,45 @@ public class OneDHaar {
         return s_k;
 
     }
+    
+    // compute 2^n x 2^n matrix for the inverse haar transform
+    public static double[][] computeInverseHaarTransformMatrix(int n) {
+        int size = (int) Math.pow(2, n);
+        double[] base_vector = new double[size];
+        double[][] ihw = new double[size][size];
+        for(int col_num = 0; col_num < size; col_num++) {
+            for(int i = 0; i < size; i++) {
+                if ( i == col_num )
+                    base_vector[i] = 1;
+                else
+                    base_vector[i] = 0;
+            }
+            OneDHaar.orderedFastInverseHaarWaveletTransform(base_vector);
+            for(int row_num = 0; row_num < size; row_num++) {
+                ihw[row_num][col_num] = base_vector[row_num];
+            }
+        }
+        
+        return ihw;
+    }
+    
+    // apply 2^n x 2^n haar transform matrix (forward or inverse) to 2^n input signal v.
+    public static double[] applyHaarTransformMatrix(double[][] htm, double[] v) {
+        int num_rows = htm.length;
+        if ( num_rows < 1 ) return null;
+        int num_cols = htm[0].length;
+        if ( num_cols < 1 ) return null;
+        if ( num_rows != num_cols ) return null;
+        if ( num_rows != v.length ) return null;
+        double[] inversed_v = new double[num_cols];
+        double dot_product = 0;
+        for(int row = 0; row < num_rows; row++) {
+            dot_product = 0;
+            for(int col = 0; col < num_cols; col++) {
+                dot_product += htm[row][col]*v[col];
+            }
+            inversed_v[row] = dot_product;
+        }
+        return inversed_v;
+    }
 }
