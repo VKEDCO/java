@@ -233,7 +233,98 @@ public class Chapter_01 {
         FourierSeriesExpansion.approximateFromExpansionCoeffsOverRange(from, upto, step, coeffs, xs); 
     }
     
+    public static void example_03_p26a(double shift, double from, double upto, double step) {
+        Function f = new SinXAbs(shift);
+        double[] partition = Partition.partition(from, upto, step);
+        
+        double[] range = f.generateRangeInterval(partition);
+        ArrayList<CoeffPair> coeffs = null;
+        coeffs = FourierSeriesExpansion.expandFromFunctionData(range, 0, 5, from, upto, step);
+        FourierSeriesExpansion.approximateFromExpansionCoeffsOverRange(from, upto, step, coeffs, f); 
+    }
+    
+    public static void example_03_p26b(double x, double shift, double from, double upto, double step) {
+        Function xs = new SinXAbs(shift);
+        double[] partition = Partition.partition(from, upto, step);
+        
+        double[] range = xs.generateRangeInterval(partition);
+        ArrayList<CoeffPair> coeffs = null;
+        
+        coeffs = FourierSeriesExpansion.expandFromFunctionData(range, 0, 5, from, upto, step);
+        
+        for(CoeffPair cp: coeffs) {
+            System.out.println("a" + cp.getN() + " = " + cp.getA());
+            System.out.println("b" + cp.getN() + " = " + cp.getB());
+        }
+        
+        double ay = FourierSeriesExpansion.approximateFromExpansionCoeffsAt(x, coeffs);
+        System.out.println("y  = " + xs.v(x));
+        System.out.println("ay = " + ay);
+    }
+    
+    public static void example_04_p27a(double shift, double from, double upto, double step) {
+        Function f = new FofX(shift);
+        double[] partition = Partition.partition(from, upto, step);
+        
+        double[] range = f.generateRangeInterval(partition);
+        ArrayList<CoeffPair> coeffs = null;
+        coeffs = FourierSeriesExpansion.expandFromFunctionData(range, 0, 100, from, upto, step);
+        FourierSeriesExpansion.approximateFromExpansionCoeffsOverRange(from, upto, step, coeffs, f); 
+    }
+    
+    public static void example_04_p27b(double x, double shift, double from, double upto, double step) {
+        Function xs = new FofX(shift);
+        double[] partition = Partition.partition(from, upto, step);
+        
+        double[] range = xs.generateRangeInterval(partition);
+        ArrayList<CoeffPair> coeffs = null;
+        
+        coeffs = FourierSeriesExpansion.expandFromFunctionData(range, 0, 100, from, upto, step);
+        
+        for(CoeffPair cp: coeffs) {
+            System.out.println("a" + cp.getN() + " = " + cp.getA());
+            System.out.println("b" + cp.getN() + " = " + cp.getB());
+        }
+        
+        double ay = FourierSeriesExpansion.approximateFromExpansionCoeffsAt(x, coeffs);
+        System.out.println("y  = " + xs.v(x));
+        System.out.println("ay = " + ay);
+    }
+    
+    public static void test_sin_curve_01a(int freq_range_start, int freq_range_end, double from, double upto, double step) {
+        Function f = new SineCurve01();
+        double[] partition = Partition.partition(from, upto, step);
+        
+        double[] range = f.generateRangeInterval(partition);
+        ArrayList<CoeffPair> coeffs = null;
+        coeffs = FourierSeriesExpansion.expandFromFunctionData(range, freq_range_start, freq_range_end, from, upto, step);
+        for(CoeffPair cp: coeffs) {
+            if ( Math.abs(cp.getA()) > 0.001 || Math.abs(cp.getB()) > 0.001 ) {
+                System.out.println("a" + cp.getN() + " = " + cp.getA());
+                System.out.println("b" + cp.getN() + " = " + cp.getB());
+            }
+        }
+        //FourierSeriesExpansion.approximateFromExpansionCoeffsOverRange(from, upto, step, coeffs, f);
+    }
+    
+    public static void test_sin_curve_02a(int freq_range_start, int freq_range_end, double from, double upto, double step) {
+        Function f = new SineCurve02();
+        double[] partition = Partition.partition(from, upto, step);
+        
+        double[] range = f.generateRangeInterval(partition);
+        ArrayList<CoeffPair> coeffs = null;
+        coeffs = FourierSeriesExpansion.expandFromFunctionData(range, freq_range_start, freq_range_end, from, upto, step);
+        for(CoeffPair cp: coeffs) {
+            if ( Math.abs(cp.getA()) > 0.001 || Math.abs(cp.getB()) > 0.001 ) {
+                System.out.println("a" + cp.getN() + " = " + cp.getA());
+                System.out.println("b" + cp.getN() + " = " + cp.getB());
+            }
+        }
+        //FourierSeriesExpansion.approximateFromExpansionCoeffsOverRange(from, upto, step, coeffs, f);
+    }
+    
     public static void main(String[] args) {
-        example_02_p25a(-1, -Math.PI+1, Math.PI+1, 0.0001);
+        test_sin_curve_02a(44000, 44100, 0, 2*Math.PI, 0.0001);
+        //example_03_p26b(0, 0, -Math.PI, Math.PI, 0.0001);
     }
 }
