@@ -1,23 +1,16 @@
 package org.vkedco.calc.chapter_05;
 
-import org.vkedco.calc.utils.AreaAsSum;
+import org.vkedco.calc.utils.RiemannSum;
 import org.vkedco.calc.utils.Function;
+import org.vkedco.calc.utils.FunctionLimit;
 import org.vkedco.calc.utils.IntegralAsSum;
 import org.vkedco.calc.utils.Partition;
 
 /**
- *
  * @author vladimir kulyukin
  */
 public class Chapter_05 {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        ex05_p335();
-    }
-    
     final static String LP_AREA = "Left Point Area";
     final static String RP_AREA = "Right Point Area";
     final static String MP_AREA = "Mid Point Area";
@@ -27,46 +20,134 @@ public class Chapter_05 {
     public static void ex01_p335() {
         double[] p = {0, 1, 2, 3, 4};
         Function f = new F_ex01_p335();
-        System.out.println(LP_AREA + EQ + AreaAsSum.area_left_point(f, p));
-        System.out.println(RP_AREA + EQ + AreaAsSum.area_right_point(f, p));
-        System.out.println(MP_AREA + EQ + AreaAsSum.area_mid_point(f, p));
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
         System.out.println(INTEGRAL + EQ + IntegralAsSum.sum(f, Partition.partition(0, 4, 0.01), 0.01));
     }
     
     public static void ex02_p335() {
         double[] p = {0, 1, 2, 3, 4};
         Function f = new F_ex02_p335();
-        System.out.println(LP_AREA + EQ + AreaAsSum.area_left_point(f, p));
-        System.out.println(RP_AREA + EQ + AreaAsSum.area_right_point(f, p));
-        System.out.println(MP_AREA + EQ + AreaAsSum.area_mid_point(f, p));
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
         System.out.println(INTEGRAL + EQ + IntegralAsSum.sum(f, Partition.partition(0, 4, 0.01), 0.01));
     }
     
     public static void ex03_p335() {
         Function f = new F_ex03_p335();
         double[] p = {0, 1, 2, 3, 4};
-        System.out.println(LP_AREA + EQ + AreaAsSum.area_left_point(f, p));
-        System.out.println(RP_AREA + EQ + AreaAsSum.area_right_point(f, p));
-        System.out.println(MP_AREA + EQ + AreaAsSum.area_mid_point(f, p));
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
         System.out.println(INTEGRAL + EQ + IntegralAsSum.sum(f, Partition.partition(0, 4, 0.01), 0.01));
     }
     
     public static void ex04_p335() {
         Function f = new F_ex04_p335();
         double[] p = {0, 1, 2, 3, 4};
-        System.out.println(LP_AREA + EQ + AreaAsSum.area_left_point(f, p));
-        System.out.println(RP_AREA + EQ + AreaAsSum.area_right_point(f, p));
-        System.out.println(MP_AREA + EQ + AreaAsSum.area_mid_point(f, p));
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
         System.out.println(INTEGRAL + EQ + IntegralAsSum.sum(f, Partition.partition(0, 4, 0.01), 0.01));
     }
     
-     public static void ex05_p335() {
+    public static void ex05_p335() {
         Function f = new F_ex05_p335();
         double[] p = Partition.partition(-1, 2, 0.5);
-        System.out.println(LP_AREA + EQ + AreaAsSum.area_left_point(f, p));
-        System.out.println(RP_AREA + EQ + AreaAsSum.area_right_point(f, p));
-        System.out.println(MP_AREA + EQ + AreaAsSum.area_mid_point(f, p));
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
         System.out.println(INTEGRAL + EQ + IntegralAsSum.sum(f, Partition.partition(-1, 2, 0.001), 0.001));
+    }
+     
+    public static void ex06_p335() {
+        Function f = new F_ex06_p335();
+        double[] p = Partition.partition(0, 2, 0.5);
+        double[] ppoints = {0.25, 1, 1.25, 2.0};
+        System.out.println("Area" + EQ +  RiemannSum.customPointArea(f, p, ppoints));
+    }
+    
+    public static void ex07_p335() {
+        Function f = new F_ex07_p335();
+        double[] p = Partition.partition(0, Math.PI, Math.PI/4);
+        double[] pps = {Math.PI/6, Math.PI/3, 2*Math.PI/3, 5*Math.PI/6};
+        System.out.println("Area" + EQ +  RiemannSum.customPointArea(f, p, pps));
+    }
+    
+    public static void ex09_p335() {
+        Function f = new F_ex09_p335();
+        double[] p = Partition.partition(0, 3, 0.1);
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
+    }
+    
+    public static void ex23_p335() {
+        int k = -1;
+        int n = 5;
+        double denom = 4.0*5;
+        double delta = Math.PI/denom;
+        Function f = new F_ex23_p335(0);
+        double[] p = Partition.partition(k*Math.PI, k*Math.PI + (Math.PI/4), Math.PI/denom);
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
+    }
+    
+    public static void ex25_p335() {
+        double[] p = Partition.partition(0, Math.PI, Math.PI/10);
+        Function f = new F_ex25_p335();
+        System.out.println(LP_AREA + EQ + RiemannSum.leftPointArea(f, p));
+        System.out.println(RP_AREA + EQ + RiemannSum.rightPointArea(f, p));
+        System.out.println(MP_AREA + EQ + RiemannSum.midPointArea(f, p));
+    }
+    
+    public static void ex26_p336() {
+        System.out.println(FunctionLimit.limitAtInfinity(new F_ex26_p336(2), 0, 1, 10000));
+    }
+    
+    public static void example01_p337() {
+        double[] p =  {-2, -1.5, -1, -0.3, 0.2, 1};
+        double[] ps = {-1.8, -1.2, -0.3, 0, 0.7};
+        double[] p1 = {1, 3, 10};
+        System.out.println("Riemann sum = " + RiemannSum.customPointArea(new F_example01_p337(), p, ps));
+        System.out.println("||P|| = " + Partition.norm(p1));
+    }
+    
+    public static void example03a_p338() {
+        System.out.println("Riemann sum = " + RiemannSum.midPointArea(new F_example03a_p338(), 0, 1, 0.001));
+        System.out.println("Riemann sum = " + RiemannSum.leftPointArea(new F_example03a_p338(), 0, 1, 0.001));
+        System.out.println("Riemann sum = " + RiemannSum.rightPointArea(new F_example03a_p338(), 0, 1, 0.001));
+        System.out.println("pi/4 = " + Math.PI/4.0);
+    }
+    
+    public static void example03b_p338() {
+        double mid_1_3 = RiemannSum.midPointArea(new F_example03b_p338(), 1, 3, 0.001);
+        double mid_0_1 = RiemannSum.midPointArea(new F_example03b_p338(), 0, 1, 0.001);
+        System.out.println("mid[1,3] = " + mid_1_3);
+        System.out.println("mid[0,1] = " + mid_0_1);
+        System.out.println("mid[1,3]-mid[0,1] = " + (mid_1_3 + mid_0_1));
+        
+        double left_1_3 = RiemannSum.leftPointArea(new F_example03b_p338(), 1, 3, 0.001);
+        double left_0_1 = RiemannSum.leftPointArea(new F_example03b_p338(), 0, 1, 0.001);
+        System.out.println("left[1,3] = " + left_1_3);
+        System.out.println("left[0,1] = " + left_0_1);
+        System.out.println("left[1,3]-left[0,1] = " + (left_1_3 + left_0_1));
+
+        double right_1_3 = RiemannSum.rightPointArea(new F_example03b_p338(), 1, 3, 0.001);
+        double right_0_1 = RiemannSum.rightPointArea(new F_example03b_p338(), 0, 1, 0.001);
+        System.out.println("right[1,3] = " + right_1_3);
+        System.out.println("right[0,1] = " + right_0_1);
+        System.out.println("right[1,3]-right[0,1] = " + (right_1_3 + right_0_1));
+    }
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        example03a_p338();
     }
     
 }
