@@ -143,11 +143,34 @@ public class Chapter_05 {
         System.out.println("right[1,3]-right[0,1] = " + (right_1_3 + right_0_1));
     }
     
+    public static void example04_p340() {
+        Function f = new F_example_04_p340();
+        for(int num_steps = 1000; num_steps <= 55000; num_steps += 1000) {
+            System.out.println(num_steps + " | " + RiemannSum.infiniteLimitOfRegularPartition(f, 0, 3, num_steps));
+        }
+    }
+    
+    public static void example04b_p340() {
+        Function f = new F_example_04_p340();
+        double from = 0;
+        double upto = 3;
+        System.out.println("LP = " + RiemannSum.leftPointArea(f, from, upto, 0.001));
+        System.out.println("RP = " + RiemannSum.rightPointArea(f, from, upto, 0.001));
+        System.out.println("MP = " + RiemannSum.midPointArea(f, from, upto, 0.001));
+    }
+    
+    public static void example05_p341() {
+        Function f = new F_example_05_p341();
+        for(int num_steps = 1000; num_steps <= 5000; num_steps += 1000) {
+            System.out.println(num_steps + " | " + RiemannSum.infiniteLimitOfRegularPartition(f, 1, 2, num_steps));
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        example03a_p338();
+        example05_p341();
     }
     
 }
