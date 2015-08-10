@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
+ *
  * @author vladimir kulyukin
  */
 public class FunctionLimit {
@@ -82,5 +83,16 @@ public class FunctionLimit {
         leftMean /= leftFmap.size();
         rightMean /= rightFmap.size();
         return (leftMean+rightMean)/2;
-    }  
+    }
+    
+    public static double limitAtInfinity(Function f, double start, double step, int num_steps) {
+        double x = start;
+        double y = 0;
+        while ( num_steps >= 0 ) {
+            y = f.v(x);
+            x += step;
+            num_steps--;
+        }
+        return y;
+    }
 }
