@@ -1,5 +1,7 @@
 package org.vkedco.calc.utils;
 
+import org.vkedco.calc.chapter_05.RegularPartitionSum;
+
 /**
  *
  * @author vladimir kulyukin
@@ -97,5 +99,11 @@ public class RiemannSum {
             area += f.v(partition_points[i-1])*w;
         }
         return area;
+    }
+    
+    // Theorem 5, p. 340 in Stewart's Calculus
+    public static double infiniteLimitOfRegularPartition(Function f, double a, double b, int num_steps) {
+        Function rpF = new RegularPartitionSum(f, a, b);
+        return FunctionLimit.limitAtInfinity(rpF, 1, 1, num_steps);
     }
 }
