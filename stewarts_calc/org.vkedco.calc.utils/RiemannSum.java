@@ -101,9 +101,17 @@ public class RiemannSum {
         return area;
     }
     
-    // Theorem 5, p. 340 in Stewart's Calculus
+    // Theorem 5, p. 340 in Stewart's Calculus: If f is integrable on [a, b], then
+    // integral(f, a, b) = lim_{n->infinity}{(b-a)/n*sum_{i=1}^{n}{f(a + i*(b-a)/n}
     public static double infiniteLimitOfRegularPartition(Function f, double a, double b, int num_steps) {
         Function rpF = new RegularPartitionSum(f, a, b);
         return FunctionLimit.limitAtInfinity(rpF, 1, 1, num_steps);
+    }
+    
+    public static double midPointRule(Function f, double a, double b, int n) {
+        if ( b < a ) throw new IllegalArgumentException("midPointRule: b < a");
+        if ( a == b ) return 0;
+        final double step = (b - a)/n;
+        return RiemannSum.midPointArea(f, a, b, step);
     }
 }
