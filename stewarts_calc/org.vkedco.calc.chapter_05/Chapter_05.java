@@ -166,6 +166,34 @@ public class Chapter_05 {
         }
     }
     
+    public static void example05b_p341() {
+        Function f = new F_example_05_p341();
+        
+        for(int n = 1; n <= 10; n += 1) {
+            System.out.println("n = " + n + ": " + RiemannSum.midPointRule(f, 1, 2, n));
+            System.out.println("RS = " + RiemannSum.infiniteLimitOfRegularPartition(f, 1, 2, 1000));
+        }
+    }
+    
+    public static void example_07_p343() {
+        Function f = new F_example_07_p343();
+        System.out.println("MPR(5) = " + RiemannSum.midPointRule(f, 1, 4, 5));
+        System.out.println("MPR(10) = " + RiemannSum.midPointRule(f, 1, 4, 10));
+        System.out.println("MPR(20) = " + RiemannSum.midPointRule(f, 1, 4, 20));
+        System.out.println("RS  = " + RiemannSum.infiniteLimitOfRegularPartition(f, 1, 4, 2000));
+    }
+    
+    public static void ex_09_p344() {
+        System.out.println(RiemannSum.midPointRule(new F_ex09_p344(), 0, 5, 5));
+        System.out.println("RS = " + RiemannSum.infiniteLimitOfRegularPartition(new F_ex09_p344(), 0, 5, 1000));
+    }
+    
+    public static void ex_25_p345() {
+        Function f = new F_ex25_p345();
+        System.out.println(RiemannSum.midPointRule(f, -3, 0, 100));
+        System.out.println(RiemannSum.infiniteLimitOfRegularPartition(f, -3, 0, 1000));
+    }
+    
     /**
      * @param args the command line arguments
      */
