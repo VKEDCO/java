@@ -1,5 +1,7 @@
 package org.vkedco.wavelets.tests;
 
+import org.vkedco.calc.utils.Partition;
+import org.vkedco.calc.utils.Ripples_F_p25;
 import org.vkedco.wavelets.haar.OneDHaar;
 
 /**
@@ -9,15 +11,13 @@ import org.vkedco.wavelets.haar.OneDHaar;
  * Some examples and solutions to exercises from Ch. 01 of
  * "Wavlets Made Easy" by Yves Nievergelt.
  * 
- *  More documentation at http://vkedco.blogspot.com/2014/07/1d-and-2d-haar-wavelet-transforms-in.html.
- * 
- * Bugs to vladimir dot kulyukin at gmail dot com.
+ * Chapter 4.1 in "Ripples in Mathematics" by Jensen & la Cour-Harbo
  * ============================================================
  */
 public class OneDHaarTests {
     
     // Run ordered and inverse ordered fast haar wavelet transform
-    public static void testOrderedHaar(double[] sample) {
+    public static void testOrderedFHWT(double[] sample) {
         System.out.println("Original sample:");
         OneDHaar.displaySample(sample);
  
@@ -25,9 +25,9 @@ public class OneDHaarTests {
         System.out.println("Ordered Fast Haar Transform:");
         OneDHaar.displaySample(sample);
         
-        OneDHaar.orderedFastInverseHaarWaveletTransform(sample);
-        System.err.println("Ordered Fast Inverse Haar Transform");
-        OneDHaar.displaySample(sample);
+        //OneDHaar.orderedFastInverseHaarWaveletTransform(sample);
+        //System.err.println("Ordered Fast Inverse Haar Transform");
+        //OneDHaar.displaySample(sample);
     }
     
     // Run in-place forward and inverse fast haar wavelet transform
@@ -47,36 +47,36 @@ public class OneDHaarTests {
     // Example 1.12, p. 19.
     public static void ex_1_12_p19() {
         final double[] sample = {3, 1, 0, 4, 8, 6, 9, 9};
-        testOrderedHaar(sample);
+        testOrderedFHWT(sample);
     }
     
     // Ex. 1.15, p. 20
     public static void ex_1_15_p20() {
         final double[] sample = {3, 9};
-        testOrderedHaar(sample);
+        testOrderedFHWT(sample);
     }
     
     // Ex. 1.16, p. 20
      public static void ex_1_16_p20() {
         final double[] sample = {1, 7};
-        testOrderedHaar(sample);
+        testOrderedFHWT(sample);
     }
      
     // Ex. 1.17, p. 21
      public static void ex_1_17_p21() {
         final double[] sample = {2, 4, 8, 6};
-        testOrderedHaar(sample);
+        testOrderedFHWT(sample);
     }
      
      public static void ex_1_18_p21() {
         final double[] sample = {5, 7, 3, 1};
-        testOrderedHaar(sample);
+        testOrderedFHWT(sample);
      }
      
      // Ex. 1.19, p. 21
      public static void ex_1_19_p21() {
         final double[] sample = {8, 6, 7, 3, 1, 1, 2, 4};
-        testOrderedHaar(sample);
+        testOrderedFHWT(sample);
     }
      
     // Example 1.17, p. 25
@@ -565,14 +565,14 @@ public class OneDHaarTests {
     }
      
      public static void ex_1_49_p33() {
-        double[] river_flows = {10.0, 12.0, 12.0, 7.0,  8.0, 9.1, 8.2,  9.4,
+        double[] frost_depths = {10.0, 12.0, 12.0, 7.0,  8.0, 9.1, 8.2,  9.4,
                                 16.0, 15.0, 13.0, 11.0, 6.4, 9.0, 19.0, 118.0};
         double[] frost_depths_copy = new double[16];
-        System.arraycopy(river_flows, 0, frost_depths_copy, 0, 16);
-        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(river_flows, 4);
-        System.out.print("In-Place Transformed "); OneDHaar.displaySample(river_flows);
+        System.arraycopy(frost_depths, 0, frost_depths_copy, 0, 16);
+        OneDHaar.inPlaceFastHaarWaveletTransformForNumIters(frost_depths, 4);
+        System.out.print("In-Place Transformed "); OneDHaar.displaySample(frost_depths);
         System.out.println("Ordered Freqs from In-Place Haar");
-        OneDHaar.displayOrderedFreqsFromInPlaceHaar(river_flows);
+        OneDHaar.displayOrderedFreqsFromInPlaceHaar(frost_depths);
         System.out.println();
         
         OneDHaar.orderedFastHaarWaveletTransform(frost_depths_copy);
@@ -580,8 +580,24 @@ public class OneDHaarTests {
         System.out.println("Ordered Freqs from Ordered Haar");
         OneDHaar.displayOrderedFreqsFromOrderedHaar(frost_depths_copy);
     }
-    
-    static void testOrderedFHWTForNumIters(double[] sample) {
+     
+     static void testOneDInPlaceFHWT(double[] sample, int n) {
+         System.out.println("Original sample:");
+         OneDHaar.displaySample(sample);
+         System.out.println();
+         
+         OneDHaar.inPlaceFastHaarWaveletTransform(sample);
+         System.out.println("Transformed sample:");
+         OneDHaar.displaySample(sample);
+         System.out.println();
+         
+         OneDHaar.inPlaceFastInverseHaarWaveletTransformForNumIters(sample, n);
+         System.out.println("Restored sample:");
+         OneDHaar.displaySample(sample);
+         System.out.println();
+     }
+     
+     static void testOrderedFHWTForNumIters(double[] sample) {
         int n = (int)(Math.log(sample.length)/Math.log(2.0));
         double[] copy_sample = new double[sample.length];
         System.arraycopy(sample, 0, copy_sample, 0, sample.length);
@@ -602,7 +618,7 @@ public class OneDHaarTests {
          }
      }
      
-    static void testNormalizedOrderedFHWT(double[] sample) {
+     static void testNormalizedOrderedFHWT(double[] sample) {
         int n = (int)(Math.log(sample.length)/Math.log(2.0));
         double[] copy_sample = new double[sample.length];
         OneDHaar.displaySample(sample);
@@ -612,7 +628,7 @@ public class OneDHaarTests {
         OneDHaar.displaySample(sample);
      }
      
-    static void testNormalizedOrderedFHWTForNumIters(double[] sample, double thresh) {
+      static void testNormalizedOrderedFHWTForNumIters(double[] sample, double thresh) {
         int n = (int)(Math.log(sample.length)/Math.log(2.0));
         double[] copy_sample = new double[sample.length];
         System.arraycopy(sample, 0, copy_sample, 0, sample.length);
@@ -632,12 +648,231 @@ public class OneDHaarTests {
              System.out.println("TRUE");
          }
      }
-     
-    public static void main(String[] args) {
-         double[] sample = {4, 2, -1, -3};
-         OneDHaar.inPlaceFastInverseHaarWaveletTransform(sample);
-         OneDHaar.displaySample(sample);
-     }
-     
     
+    static void ripplesTest01() {
+        double[] sample01 = {56, 40, 8, 24, 48, 48, 40, 16};
+        double[] sample02 = {56, 40, 8, 24, 48, 48, 40, 16};
+        double[] sample03 = {56, 40, 8, 24, 48, 48, 40, 16};
+        ripplesTestAux01(sample01, 1);
+        ripplesTestAux01(sample02, 2);
+        ripplesTestAux01(sample03, 3);
+    }
+    static void ripplesTestAux01(double[] sample, int num_iters) {
+        OneDHaar.orderedFastHaarWaveletTransformForNumIters(sample, num_iters);
+        System.out.print(num_iters + ") " + "Forward: "); OneDHaar.displaySample(sample);
+        OneDHaar.orderedFastInverseHaarWaveletTransformForNumIters(sample, num_iters);
+        System.out.print(num_iters + ") " + "Inverse: ");  OneDHaar.displaySample(sample);
+        System.out.println();
+    }
+    
+    static void ripplesTest02() {
+        double[] domain = Partition.partition(0, 511, 1);
+        double[] range  = new double[512];
+        Ripples_F_p25 f = new Ripples_F_p25();
+        
+        for(int i = 0; i < 512; i++)  {
+            range[i] = f.v(domain[i]);
+        }
+        
+        //for(int i = 0; i < 512; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(range, 3);
+        
+        //for(int i = 0; i < 512; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("D8");
+        //for(int i = 256; i < 512; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("D7");
+        //for(int i = 128; i < 256; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("D6");
+        //for(int i = 64; i < 128; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        System.out.println("S6");
+        for(int i = 0; i < 64; i++)  {
+            System.out.println(range[i]);
+        }
+    }
+    
+    static void ripplesTest03() {
+        double[] domain = Partition.partition(0, 511, 1);
+        double[] range  = new double[512];
+        Ripples_F_p25 f = new Ripples_F_p25();
+        
+        for(int i = 0; i < 512; i++)  {
+            range[i] = f.v(domain[i]);
+        }
+        
+        //for(int i = 0; i < 512; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(range, 3);
+        
+        //System.out.println("RANGE");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(range[i]);
+        //}
+        
+        int d8_start = 256; int d8_end = 511;
+        int d7_start = 128; int d7_end = 255;
+        int d6_start = 64;  int d6_end = 127;
+        int s6_start = 0;   int s6_end = 63;
+        
+        // 06, 06, 07, d8
+        double[] s06_d06_d07_d8 = new double[range.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= d8_start && i <= d8_end ) {
+                s06_d06_d07_d8[i] = range[i];
+            }
+            else {
+                s06_d06_d07_d8[i] = 0;
+            }
+        }
+        
+        //System.out.println("S06_D06_D07_D8");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(s06_d06_d07_d8[i]);
+        //}
+        
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(s06_d06_d07_d8, 3);
+        
+        //System.out.println("Inversed S06_D06_D07_D8");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(s06_d06_d07_d8[i]);
+        //}
+        
+        // 06, 06, d7, 08
+        double[] s06_d06_d7_d08 = new double[range.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= d7_start && i <= d7_end ) {
+                s06_d06_d7_d08[i] = range[i];
+            }
+            else {
+                s06_d06_d07_d8[i] = 0;
+            }
+        }
+        
+        //System.out.println("S06_D06_D7_D8");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(s06_d06_d7_d08[i]);
+        //}
+        
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(s06_d06_d7_d08, 3);
+        
+        //System.out.println("Inverse S06_D06_D7_D8");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(s06_d06_d7_d08[i]);
+        //}
+        
+        // 06, d6, 07, 08
+        double[] s06_d6_d07_d08 = new double[range.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= d6_start && i <= d6_end ) {
+                s06_d6_d07_d08[i] = range[i];
+            }
+            else {
+                s06_d6_d07_d08[i] = 0;
+            }
+        }
+        
+        //System.out.println("S06_D6_D7_D8");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(s06_d6_d07_d08[i]);
+        //}
+        
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(s06_d6_d07_d08, 3);
+        
+        //System.out.println("Inverse S06_D6_D07_D08");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(s06_d6_d07_d08[i]);
+        //}
+        
+        // s6, 06, 07, 08
+        double[] s6_d06_d07_d08 = new double[range.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= s6_start && i <= s6_end ) {
+                s6_d06_d07_d08[i] = range[i];
+            }
+            else {
+                s6_d06_d07_d08[i] = 0;
+            }
+        }
+        
+        //System.out.println("S6_D06_D07_D08");
+        //for(int i = 0; i < 512; i++) {
+        //   System.out.println(s6_d06_d07_d08[i]);
+        //}
+        
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(s6_d06_d07_d08, 3);
+        
+        System.out.println("Inversed S6_D06_D07_D08");
+        for(int i = 0; i < 512; i++) {
+            System.out.println(s6_d06_d07_d08[i]);
+        }
+        
+        /*
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(s06_d06_d07_d8, 3);
+        
+        // Inversed S06_D06_D07_D8
+        System.out.println("Inversed S06_D06_D07_D8");
+        for(int i = 0; i < 512; i++) {
+            System.out.println(s06_d06_d07_d8[i]);
+        }
+        
+        
+        System.out.println("S06_D06_D7_D8");
+        for(int i = 0; i < 512; i++) {
+            System.out.println(s06_d06_d7_d08[i]);
+        }
+        */
+        
+        /*
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(s06_d06_d07_d8, 3);
+        
+        System.out.println("Inversed S06_D06_D07_D8");
+        for(int i = 0; i < 512; i++) {
+            System.out.println(s06_d06_d07_d8[i]);
+        }
+        */
+        
+        //for(int i = 0; i < 512; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("D8");
+        //for(int i = 256; i < 512; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("D7");
+        //for(int i = 128; i < 256; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("D6");
+        //for(int i = 64; i < 128; i++)  {
+        //    System.out.println(range[i]);
+        //}
+        
+        //System.out.println("RANGE");
+        //for(int i = 0; i < 512; i++) {
+        //    System.out.println(range[i]);
+        //}
+    }
+    
+    public static void main(String[] args) {
+         ripplesTest03();
+    }
 }
