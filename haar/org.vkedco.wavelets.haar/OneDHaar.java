@@ -1,5 +1,14 @@
 package org.vkedco.wavelets.haar;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 /**
  * ============================================================================
  * @author Vladimir Kulyukin
@@ -36,6 +45,35 @@ public class OneDHaar {
         } else {
             double p_of_2 = (Math.log(n) / Math.log(2));
             return Math.abs(p_of_2 - (int) p_of_2) == 0;
+        }
+    }
+    
+    public static int largestPowerOf2NoGreaterThan(int i) {
+        if ( isPowerOf2(i) )
+            return i;
+        else {
+            int curr = i-1;
+            while ( curr > 0 ) {
+                if ( isPowerOf2(curr) ) {
+                    return curr;
+                }
+                else {
+                    --curr;
+                }
+            }
+            return 0;
+        }
+    }
+    
+    public static double[] largestSubsignalOfPowerOf2(double[] signal) {
+        if ( isPowerOf2(signal.length) )
+            return signal;
+        else {
+            int i = OneDHaar.largestPowerOf2NoGreaterThan(signal.length);
+            if ( i == 0 ) return null;
+            double[] subsignal = new double[i];
+            System.arraycopy(signal, 0, subsignal, 0, i);
+            return subsignal;
         }
     }
 
@@ -103,9 +141,48 @@ public class OneDHaar {
             sample[GAP_SIZE * K + I] = c;
         }
     }
+    
+    public static void primitiveDoublesToFile(double[] signal, String filePath) throws FileNotFoundException, IOException {
+        FileWriter file = new FileWriter(filePath); 
+        BufferedWriter buffer = new BufferedWriter(file);
+        
+        for(double d: signal) {
+            buffer.write(Double.toString(d));
+            buffer.newLine();
+        }
+        buffer.flush();
+        //Close the input stream
+        buffer.close();
+        file.close();
+    }
+    
+    public static double[] fileToPrimitiveDoubles(String filePath) throws FileNotFoundException, IOException {
+        FileInputStream fstream = new FileInputStream(filePath);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+        ArrayList<Double> aryOfDoubles = new ArrayList<>();
 
-    public static void orderedFastHaarWaveletTransform(double[] sample) {
-        final int n = sample.length;
+        String strLine;
+        //Read File Line By Line
+        while (( strLine = br.readLine()) != null )   {
+            // Print the content on the console
+            System.out.println (strLine);
+            aryOfDoubles.add(Double.valueOf(strLine));
+        }
+
+        //Close the input stream
+        br.close();
+        //aryOfDou
+        double[] prims = new double[aryOfDoubles.size()];
+        int i = 0;
+        for(Double d: aryOfDoubles) {
+            prims[i++] = d.doubleValue();
+        }
+        aryOfDoubles = null;
+        return prims;
+    }
+
+    public static void orderedFastHaarWaveletTransform(double[] signal) {
+        final int n = signal.length;
         // if n is not an integral power of 2, then return
         if (!OneDHaar.isPowerOf2(n)) {
             return;
@@ -114,17 +191,17 @@ public class OneDHaar {
         final int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
         double acoeff, ccoeff;
         if (NUM_SWEEPS == 1) {
-            acoeff = (sample[0] + sample[1]) / 2.0;
-            ccoeff = (sample[0] - sample[1]) / 2.0;
-            sample[0] = acoeff;
-            sample[1] = ccoeff;
+            acoeff = (signal[0] + signal[1]) / 2.0;
+            ccoeff = (signal[0] - signal[1]) / 2.0;
+            signal[0] = acoeff;
+            signal[1] = ccoeff;
             return;
         }
         double[] acoeffs;
         double[] ccoeffs;
         for (int SWEEP_NUM = 1; SWEEP_NUM < NUM_SWEEPS; SWEEP_NUM++) {
             // size is the number of a-coefficients and c-coefficients at
-            // sweep SWEEP_NUM. for example, if the sample has 8 elements;
+            // sweep SWEEP_NUM. for example, if the signal has 8 elements;
             // at sweep 1, we have 4 a-coefficients and 4 c-coefficients;
             // at sweep 2, we have 2 a-coefficients and 2 c-coefficients;
             // at sweep 3, we have 1 a-coefficient and 1 c-coefficient.
@@ -133,45 +210,53 @@ public class OneDHaar {
             ccoeffs = new double[size]; // where we place c-coefficients
             int ai = 0; // index over acoeffs
             int ci = 0; // index over ccoeffs
-            // end is the index of the last a-coefficient in sample[] at
+            // end is the index of the last a-coefficient in signal[] at
             // sweep SWEEP_NUM. For example, if NUM_SWEEPS = 3, then
             // at sweep 1, end = 2^{3-1+1} - 1 = 7
             // at sweep 2, end = 2^{3-2+1} - 1 = 3
             int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
             for (int i = 0; i <= end; i += 2) {
-                acoeffs[ai++] = (sample[i] + sample[i + 1]) / 2.0;
-                ccoeffs[ci++] = (sample[i] - sample[i + 1]) / 2.0;
+                acoeffs[ai++] = (signal[i] + signal[i + 1]) / 2.0;
+                ccoeffs[ci++] = (signal[i] - signal[i + 1]) / 2.0;
             }
 
             // the following for-loop places the a-coeffs into the left half of the array 
             // and c-coeffs into the right half of the array
-            // for example, assume that the length of sample is 3 and NUM_SWEEPS = 3, 
+            // for example, assume that the length of signal is 3 and NUM_SWEEPS = 3, 
             // then at sweep 1, size = 4. Thus,
-            // sample[0] = a^{2}_{0}, sample[0+4] = c^{2}_{0}
-            // sample[1] = a^{2}_{1}, sample[1+4] = c^{2}_{1},
-            // sample[2] = a^{2}_{2}, sample[2+4] = c^{2}_{c},
-            // sample[3] = a^{2}_{3}, sample[3+4] = c^{2}_{3}
+            // signal[0] = a^{2}_{0}, signal[0+4] = c^{2}_{0}
+            // signal[1] = a^{2}_{1}, signal[1+4] = c^{2}_{1},
+            // signal[2] = a^{2}_{2}, signal[2+4] = c^{2}_{c},
+            // signal[3] = a^{2}_{3}, signal[3+4] = c^{2}_{3}
             // in other words, 
-            // sample[0], sample[1], sample[2], sample[3] are the 4 a-coefficients and
-            // sample[4], sample[5], sample[6], sample[7] are the 4 c-coefficients
+            // signal[0], signal[1], signal[2], signal[3] are the 4 a-coefficients and
+            // signal[4], signal[5], signal[6], signal[7] are the 4 c-coefficients
             // at sweep 2, size = 2. Thus,
-            // sample[0] = a^{1}_{0}, sample[0+2] = c^{1}_{0}
-            // sample[1] = a^{1}_{1}, sample[1+2] = c^{1}_{1}
+            // signal[0] = a^{1}_{0}, signal[0+2] = c^{1}_{0}
+            // signal[1] = a^{1}_{1}, signal[1+2] = c^{1}_{1}
             for (int i = 0; i < size; i++) {
-                sample[i] = acoeffs[i];
-                sample[i + size] = ccoeffs[i];
+                signal[i] = acoeffs[i];
+                signal[i + size] = ccoeffs[i];
             }
             //System.out.print("Forward SWEEP_NUM: " + SWEEP_NUM + " ");
-            //OneDHaar.displaySample(sample);
+            //OneDHaar.displaySample(signal);
         }
         // now we compute a^{0}_{0} and c^{0}_{0} at store them
-        // in sample[0] and sample[1]
-        acoeff = (sample[0] + sample[1]) / 2.0;
-        ccoeff = (sample[0] - sample[1]) / 2.0;
-        sample[0] = acoeff;
-        sample[1] = ccoeff;
+        // in signal[0] and signal[1]
+        acoeff = (signal[0] + signal[1]) / 2.0;
+        ccoeff = (signal[0] - signal[1]) / 2.0;
+        signal[0] = acoeff;
+        signal[1] = ccoeff;
         //System.out.print("Forward SWEEP_NUM: " + NUM_SWEEPS + " ");
-        //OneDHaar.displaySample(sample);
+        //OneDHaar.displaySample(signal);
+    }
+    
+    // same as orderedFastHaarWaveletTransform except takes its input from a
+    // a file where each sample is a double written on a separate line.
+    public static double[] orderedFastHaarWaveletTransform(String filePath) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedFastHaarWaveletTransform(signal);
+        return signal;
     }
     
     // the transform as defined on p. 21 in "Ripples in Mathematics."
@@ -245,9 +330,17 @@ public class OneDHaar {
         //OneDHaar.displaySample(sample);
     }
     
+    // same as orderedNormalizedFastHaarWaveletTransform except takes its input from a
+    // a file where each sample is a double written on a separate line.
+    public static double[] orderedNormalizedFastHaarWaveletTransform(String filePath) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedNormalizedFastHaarWaveletTransform(signal);
+        return signal;
+    }
+    
     // same as above but does ordered FHWT for a specified number of iterations
-    public static void orderedFastHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
-        final int n = sample.length;
+    public static void orderedFastHaarWaveletTransformForNumIters(double[] signal, int num_iters) {
+        final int n = signal.length;
         // if n is not an integral power of 2, then return
         if ( !OneDHaar.isPowerOf2(n) ) return;
         // compute the number of sweeps; e.g., if n = 8, then NUM_SWEEPS is 3.
@@ -255,17 +348,17 @@ public class OneDHaar {
         if ( num_iters > NUM_SWEEPS ) return;
         double acoeff, ccoeff;
         if ( NUM_SWEEPS == 1 ) {
-            acoeff = (sample[0] + sample[1]) / 2.0;
-            ccoeff = (sample[0] - sample[1]) / 2.0;
-            sample[0] = acoeff;
-            sample[1] = ccoeff;
+            acoeff = (signal[0] + signal[1]) / 2.0;
+            ccoeff = (signal[0] - signal[1]) / 2.0;
+            signal[0] = acoeff;
+            signal[1] = ccoeff;
             return;
         }
         double[] acoeffs;
         double[] ccoeffs;
         for (int SWEEP_NUM = 1; SWEEP_NUM <= num_iters; SWEEP_NUM++) {
             // size is the number of a-coefficients and c-coefficients at
-            // sweep SWEEP_NUM. for example, if the sample has 8 elements;
+            // sweep SWEEP_NUM. for example, if the signal has 8 elements;
             // at sweep 1, we have 4 a-coefficients and 4 c-coefficients;
             // at sweep 2, we have 2 a-coefficients and 2 c-coefficients;
             // at sweep 3, we have 1 a-coefficient and 1 c-coefficient.
@@ -274,23 +367,29 @@ public class OneDHaar {
             ccoeffs = new double[size]; // where we place c-coefficients
             int ai = 0; // index over acoeffs
             int ci = 0; // index over ccoeffs
-            // end is the index of the last a-coefficient in sample[] at
+            // end is the index of the last a-coefficient in signal[] at
             // sweep SWEEP_NUM. For example, if NUM_SWEEPS = 3, then
             // at sweep 1, end = 2^{3-1+1} - 1 = 7
             // at sweep 2, end = 2^{3-2+1} - 1 = 3
             int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
             for (int i = 0; i <= end; i += 2) {
-                acoeffs[ai++] = (sample[i] + sample[i + 1]) / 2.0;
-                ccoeffs[ci++] = (sample[i] - sample[i + 1]) / 2.0;
+                acoeffs[ai++] = (signal[i] + signal[i + 1]) / 2.0;
+                ccoeffs[ci++] = (signal[i] - signal[i + 1]) / 2.0;
             }
             
             for (int i = 0; i < size; i++) {
-                sample[i] = acoeffs[i];
-                sample[i + size] = ccoeffs[i];
+                signal[i] = acoeffs[i];
+                signal[i + size] = ccoeffs[i];
             }
             //System.out.print("Fordward SWEEP_NUM: " + NUM_SWEEPS + " ");
-            //OneDHaar.displaySample(sample);
+            //OneDHaar.displaySample(signal);
         }
+    }
+    
+    public static double[] orderedFastHaarWaveletTransformForNumIters(String filePath, int num_iters) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedFastHaarWaveletTransformForNumIters(signal, num_iters);
+        return signal;
     }
     
     // same as above but does ordered FHWT for a specified number of iterations but
@@ -341,6 +440,12 @@ public class OneDHaar {
             //OneDHaar.displaySample(sample);
         }
     }
+    
+    public static double[] orderedNormalizedFastHaarWaveletTransformForNumIters(String filePath, int num_iters) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedNormalizedFastHaarWaveletTransformForNumIters(signal, num_iters);
+        return signal;
+    }
 
     public static void orderedFastInverseHaarWaveletTransform(double[] sample) {
         int n = sample.length;
@@ -355,44 +460,6 @@ public class OneDHaar {
         int j = 0;
         for (int L = 1; L <= n; L++) {
             GAP = (int) (Math.pow(2.0, L - 1)); // GAP b/w averages and coefficients at level L
-            System.out.println("GAP == " + GAP);
-            restored_vals = null;
-            restored_vals = new double[2 * GAP]; // restored values at level L
-            for (int i = 0; i < GAP; i++) {
-                a0 = sample[i] + sample[GAP + i];
-                a1 = sample[i] - sample[GAP + i];
-                //System.out.println("a0 = " + "sample[" + i + "] + sample[" + GAP + "]");
-                //System.out.println("a1 = " + "sample[" + i + "] - sample[" + GAP + "]");
-                restored_vals[2 * i] = a0;
-                restored_vals[2 * i + 1] = a1;
-                //System.out.println("restored_vals[" + (2 * i) + "] = " + a0);
-                //System.out.println("restored_vals[" + (2 * i + 1) + "] = " + a1);
-            }
-            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
-            //      sample[0], sampe[1], ..., sample[2*GAP-1]
-            System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
-            //System.out.print("L == " + L + " ");
-            //OneDHaar.displaySample(sample);
-        }
-    }
-
-    // same as above but does ordered FHWT for a specific number of iters.
-    public static void orderedFastInverseHaarWaveletTransformForNumIters(double[] sample, int num_iters) {
-        int n = sample.length;
-        if (n < 2 || !OneDHaar.isPowerOf2(n)) {
-            return;
-        }
-        n = (int) (Math.log(n) / Math.log(2.0));
-        if (num_iters > n) {
-            return;
-        }
-        double a0 = 0;
-        double a1 = 0;
-        double[] restored_vals = null;
-        int GAP = (int)(Math.pow(2.0, n-num_iters));
-        int j = 0;
-        for (int L = 1; L <= num_iters; L++) {
-            //GAP = (int) (Math.pow(2.0, num_iters-1)); // GAP b/w averages and coefficients at level L
             //System.out.println("GAP == " + GAP);
             restored_vals = null;
             restored_vals = new double[2 * GAP]; // restored values at level L
@@ -403,18 +470,100 @@ public class OneDHaar {
                 //System.out.println("a1 = " + "sample[" + i + "] - sample[" + GAP + "]");
                 restored_vals[2 * i] = a0;
                 restored_vals[2 * i + 1] = a1;
-                //System.out.println("restored_vals[" + (2 * i) + "] = " + a0);
-                //System.out.println("restored_vals[" + (2 * i + 1) + "] = " + a1);
+                //System.out.println("restoredVals[" + (2 * i) + "] = " + a0);
+                //System.out.println("restoredVals[" + (2 * i + 1) + "] = " + a1);
             }
-            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            // copy restoredVals[0],   restoredVals[1], ...,  restoredVals[2*GAP-1] into
             //      sample[0], sampe[1], ..., sample[2*GAP-1]
             System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
-            //System.out.print("Inverse SWEEP_NUM: " + L + " ");
+            //System.out.print("L == " + L + " ");
             //OneDHaar.displaySample(sample);
+        }
+    }
+    
+    public static double[] orderedFastInverseHaarWaveletTransform(String filePath) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedFastInverseHaarWaveletTransform(signal);
+        return signal;
+    }
+    
+    // same as above but does ordered FHWT for a specific number of iters.
+    public static void orderedFastInverseHaarWaveletTransformForNumIters(double[] signal, int numIters) {
+        int n = signal.length;
+        if (n < 2 || !OneDHaar.isPowerOf2(n)) {
+            return;
+        }
+        n = (int) (Math.log(n) / Math.log(2.0));
+        if (numIters > n) {
+            return;
+        }
+        double a0 = 0;
+        double a1 = 0;
+        double[] restoredVals = null;
+        int GAP = 0;
+        int j = 0;
+        //System.out.println("START ***************");
+        for (int L = 1; L <= numIters; L++) {
+            GAP = (int) (Math.pow(2.0, L-1)); // GAP b/w averages and coefficients at level L
+            //System.out.println("GAP == " + GAP);
+            restoredVals = null;
+            restoredVals = new double[2 * GAP]; // restored values at level L
+            for (int i = 0; i < GAP; i++) {
+                a0 = signal[i] + signal[GAP + i];
+                a1 = signal[i] - signal[GAP + i];
+                //System.out.println("a0 = " + "signal[" + i + "] + signal[" + GAP + "] = " + a0);
+                //System.out.println("a1 = " + "signal[" + i + "] - signal[" + GAP + "] = " + a1);
+                restoredVals[2 * i] = a0;
+                restoredVals[2 * i + 1] = a1;
+                //System.out.println("restoredVals[" + (2 * i) + "] = " + a0);
+                //System.out.println("restoredVals[" + (2 * i + 1) + "] = " + a1);
+            }
+            // copy restoredVals[0],   restoredVals[1], ...,  restoredVals[2*GAP-1] into
+            //      signal[0], sampe[1], ..., signal[2*GAP-1]
+            System.arraycopy(restoredVals, 0, signal, 0, 2 * GAP);
+            //System.out.print("Inverse SWEEP_NUM: " + L + " ");
+            //OneDHaar.displaySample(signal);
             GAP *= 2;
+        } 
+    }
+    
+    public static void thresholdSignal(double[] signal, double thresh) {
+        final int n = signal.length;
+        double thresholdedSignal[] = new double[n];
+        //System.out.println("n = " + n);
+        for(int t = 0; t < n; t++) {
+            if ( Math.abs(signal[t]) > thresh )
+                thresholdedSignal[t] = signal[t];
+            else
+                thresholdedSignal[t] = 0;
         }
         
+        System.arraycopy(thresholdedSignal, 0, signal, 0, n);
+        thresholdedSignal = null;
+    }
+    // same as above but does ordered FHWT for a specific number of iters.
+    public static void orderedFastInverseHaarWaveletTransformForNumIters(double[] signal, int numIters, double thresh) {
+        int n = signal.length;
+        if (n < 2 || !OneDHaar.isPowerOf2(n)) {
+            return;
+        }
+        n = (int) (Math.log(n) / Math.log(2.0));
+        if (numIters > n) {
+            return;
+        }
         
+        thresholdSignal(signal, thresh);
+        orderedFastInverseHaarWaveletTransformForNumIters(signal, numIters);
+    }
+    
+    
+    
+    
+    
+    public static double[] orderedFastInverseHaarWaveletTransformForNumIters(String filePath, int num_iters) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedFastInverseHaarWaveletTransformForNumIters(signal, num_iters);
+        return signal;
     }
     
     // as specified on p. 21 in "Ripples in Mathematics."
@@ -443,12 +592,18 @@ public class OneDHaar {
                 restored_vals[2 * i] = a0;
                 restored_vals[2 * i + 1] = a1;
             }
-            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            // copy restoredVals[0],   restoredVals[1], ...,  restoredVals[2*GAP-1] into
             //      sample[0], sampe[1], ..., sample[2*GAP-1]
             System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
             //System.out.print("L == " + L + " ");
             //OneDHaar.displaySample(sample);
         }
+    }
+    
+    public static double[] orderedNormalizedFastInverseHaarWaveletTransform(String filePath) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedNormalizedFastInverseHaarWaveletTransform(signal);
+        return signal;
     }
     
     // same as orderedNormalizedFastInverseHaarWaveletTransform() but goes back for a specified number of iterations.
@@ -479,7 +634,7 @@ public class OneDHaar {
                 restored_vals[2 * i] = a0;
                 restored_vals[2 * i + 1] = a1;
             }
-            // copy restored_vals[0],   restored_vals[1], ...,  restored_vals[2*GAP-1] into
+            // copy restoredVals[0],   restoredVals[1], ...,  restoredVals[2*GAP-1] into
             //      sample[0], sampe[1], ..., sample[2*GAP-1]
             System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
             //System.out.print("Inverse SWEEP_NUM: " + L + " ");
@@ -488,6 +643,11 @@ public class OneDHaar {
         }
     }
     
+    public static double[] orderedNormalizedFastInverseHaarWaveletTransformForNumIters(String filePath, int num_iters) throws FileNotFoundException, IOException {
+        double[] signal = fileToPrimitiveDoubles(filePath);
+        orderedNormalizedFastInverseHaarWaveletTransformForNumIters(signal, num_iters);
+        return signal;
+    }
 
     public static void inPlaceFastInverseHaarWaveletTransform(double[] sample) {
         int n = sample.length;
@@ -708,7 +868,27 @@ public class OneDHaar {
             }
         }
         return s_k;
-
+    }
+    
+    // compute 2^n x 2^n matrix for the forward haar transform
+    public static double[][] computeForwardHaarTransformMatrix(int n) {
+        int size = (int) Math.pow(2, n);
+        double[] base_vector = new double[size];
+        double[][] fhw = new double[size][size];
+        for(int col_num = 0; col_num < size; col_num++) {
+            for(int i = 0; i < size; i++) {
+                if ( i == col_num )
+                    base_vector[i] = 1;
+                else
+                    base_vector[i] = 0;
+            }
+            OneDHaar.orderedFastHaarWaveletTransform(base_vector);
+            for(int row_num = 0; row_num < size; row_num++) {
+                fhw[row_num][col_num] = base_vector[row_num];
+            }
+        }
+        
+        return fhw;
     }
     
     // compute 2^n x 2^n matrix for the inverse haar transform
