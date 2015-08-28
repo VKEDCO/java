@@ -63,11 +63,11 @@ public class RipplesInMathCh02 {
     }
     
     static void computeTable_2_2_p8(double[] signal) {
-        computeTableForSignalOnPage7(signal, 4, "Table 2.2, p. 7, Ch. 2, \"Ripples in Mathematics\"" );
+        computeTableForSignalOnPage7(signal, 4, "Table 2.2, p. 8, Ch. 2, \"Ripples in Mathematics\"" );
     }
     
     static void computeTable_2_3_p9(double[] signal) {
-        computeTableForSignalOnPage7(signal, 9, "Table 2.2, p. 7, Ch. 2, \"Ripples in Mathematics\"" );
+        computeTableForSignalOnPage7(signal, 9, "Table 2.3, p. 9, Ch. 2, \"Ripples in Mathematics\"" );
     }
     
     // threshold the processed signal
