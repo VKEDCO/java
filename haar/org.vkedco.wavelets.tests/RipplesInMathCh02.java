@@ -6,7 +6,8 @@ import org.vkedco.wavelets.haar.OneDHaar;
 /**
  *******************************************************
  * Programmatic Notes on Ch02, "Ripples in Mathematics",
- * by A. Jensen & A. la Cour-Harbo.
+ * by A. Jensen & A. la Cour-Harbo written with a deep
+ * gratitude to the authors of this wonderful text.
  * 
  * 
  * @author Vladimir Kulyukin
