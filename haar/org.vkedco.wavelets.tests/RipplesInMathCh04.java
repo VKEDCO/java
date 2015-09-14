@@ -24,7 +24,7 @@ public class RipplesInMathCh04 {
     static final int D8_END     = 511;
     static final int D7_START   = 128; 
     static final int D7_END     = 255;
-    static final int D6_START   = 64;  
+    static final int D6_START   = 64; 
     static final int D6_END     = 127;
     static final int S6_START   = 0;   
     static final int S6_END     = 63;
@@ -139,26 +139,26 @@ public class RipplesInMathCh04 {
     // Fig. 4.4 on p. 28 in "Ripples in Mathematics."
     static void fig_4_4_p28(SIGNAL signal) {
         switch ( signal ) {
-            case D8: fig_4_4_06_06_07_d8_p28(); break;
-            case D7: fig_4_4_06_06_d7_08_p28(); break;
-            case D6: fig_4_4_06_d6_07_08_p28(); break;
-            case S6: fig_4_4_s6_06_07_08_p28(); break;
+            case D8: fig_4_4_s06_d06_d07_d8_p28(); break;
+            case D7: fig_4_4_s06_d06_d7_d08_p28(); break;
+            case D6: fig_4_4_s06_d6_d07_d08_p28(); break;
+            case S6: fig_4_4_s6_d06_d07_d08_p28(); break;
         }
     }
     
-    static void fig_4_4_06_06_07_d8_p28() {
+    static void fig_4_4_s06_d06_d07_d8_p28() {
         multires_fig_4_4_p28("Fig. 4.4, 06-06-07-d8, p. 28", D8_START, D8_END);
     }
     
-    static void fig_4_4_06_06_d7_08_p28() {
+    static void fig_4_4_s06_d06_d7_d08_p28() {
         multires_fig_4_4_p28("Fig. 4.4, 06-06-d7-08, p. 28", D7_START, D7_END);
     }
     
-    static void fig_4_4_06_d6_07_08_p28() {
+    static void fig_4_4_s06_d6_d07_d08_p28() {
         multires_fig_4_4_p28("Fig. 4.4, 06-d6-07-08, p. 28", D6_START, D6_END);
     }
     
-    static void fig_4_4_s6_06_07_08_p28() {
+    static void fig_4_4_s6_d06_d07_d08_p28() {
         multires_fig_4_4_p28("Fig. 4.4, s6-06-07-08, p. 28", S6_START, S6_END);
     }
     
@@ -179,16 +179,19 @@ public class RipplesInMathCh04 {
         display_signal(sRange); 
         System.out.println("=========================");
         
+        // transformed signal after applying 3 iterations of 1D ordered HWT
         System.out.println("TRANSFORMED SIGNAL");
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
         display_signal(sRange);
         System.out.println("=========================");
         
+        // inverted signal
         System.out.println("INVERTED SIGNAL");
         OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(sRange, 3);
         display_signal(sRange);
         System.out.println("=========================");
         
+        // difference b/w the inverted and original signals
         double[] signalDifference = new double[n];
         for(int i = 0; i < n; i++) {
             signalDifference[i] = sRange[i] - originalSignal[i];
@@ -255,33 +258,33 @@ public class RipplesInMathCh04 {
     static void fig_4_6_p29(SIGNAL signal) {
         switch ( signal ) {
             case D8: 
-                fig_4_6_06_06_07_d8_p29();
+                fig_4_6_s06_d06_d07_d8_p29();
                 break;
             case D7:
-                fig_4_6_06_06_d7_08_p29();
+                fig_4_6_s06_d06_d7_d08_p29();
                 break;
             case D6:
-                fig_4_6_06_d6_07_08_p29();
+                fig_4_6_s06_d6_d07_d08_p29();
                 break;
             case S6:
-                fig_4_6_s6_06_07_08_p29();
+                fig_4_6_s6_d06_d07_d08_p29();
                 break;
         }
     }
     
-    static void fig_4_6_06_06_07_d8_p29() {
+    static void fig_4_6_s06_d06_d07_d8_p29() {
         multires_fig_4_6_p29("06-06-07-d8, Fig. 4.6, p. 29", D8_START, D8_END);
     }
     
-    static void fig_4_6_06_06_d7_08_p29() {
+    static void fig_4_6_s06_d06_d7_d08_p29() {
         multires_fig_4_6_p29("06-06-d7-08, Fig. 4.6, p. 29", D7_START, D7_END);
     }
     
-    static void fig_4_6_06_d6_07_08_p29() {
+    static void fig_4_6_s06_d6_d07_d08_p29() {
         multires_fig_4_6_p29("06-d6-07-08, Fig. 4.6, p. 29", D6_START, D6_END);
     }
     
-    static void fig_4_6_s6_06_07_08_p29() {
+    static void fig_4_6_s6_d06_d07_d08_p29() {
         multires_fig_4_6_p29("s6-06-07-08, Fig. 4.6, p. 29", S6_START, S6_END);
     }
     
@@ -314,7 +317,7 @@ public class RipplesInMathCh04 {
     }
     
     public static void main(String[] args) {
-        fig_4_6_p29(SIGNAL.S6);
+        fig_4_6_s6_d06_d07_d08_p29();
     }
     
 }
