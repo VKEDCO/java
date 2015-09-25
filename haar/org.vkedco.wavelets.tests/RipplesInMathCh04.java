@@ -1,5 +1,6 @@
 package org.vkedco.wavelets.tests;
 
+import java.util.Arrays;
 import org.vkedco.calc.utils.Partition;
 import org.vkedco.calc.utils.Ripples_F_p25;
 import org.vkedco.wavelets.haar.OneDHaar;
@@ -392,9 +393,96 @@ public class RipplesInMathCh04 {
         multires_fig_4_8_p30("s6-06-07-08, Fig. 4.8, p. 30", S6_START, S6_END);
     }
     
-    
     public static void main(String[] args) {
-        fig_4_8_s6_d06_d07_d08_p30();
+        //fig_4_8_s6_d06_d07_d08_p30();
+        fig_4_9_p31();
+    }
+   
+    static void fig_4_9_p31() {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        System.out.println("=========================");
+        System.out.println("Signal with Noise:");
+        display_signal(sRange);
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        
+        double percent = 10.0;
+        process_signal_range(sRange, D8_START, D8_END, percent);
+        process_signal_range(sRange, D7_START, D7_END, percent);
+        process_signal_range(sRange, D6_START, D6_END, percent);
+        process_signal_range(sRange, S6_START, S6_END, percent);
+        
+        System.out.println("=========================");
+        System.out.println("Processed Signal with Noise:");
+        display_signal(sRange);
+        System.out.println("=========================");
+        System.out.println("Inversed Signal with Noise:");
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal(sRange);
+        System.out.println("=========================");
+    }
+    // debug this, possibly use the max
+    static void process_signal_range(double[] signal, int range_start, int range_end, double percent) {
+        final int range_length = range_end - range_start + 1;
+        double[] sorted_range = new double[range_length];
+        // copy the signal segment into sorted_range
+        System.arraycopy(signal, range_start, sorted_range, 0, range_length);
+        Arrays.sort(sorted_range); // sort the range
+        final int len = (int) (range_length * (percent/100.0));
+        final int sorted_range_min_index = Math.max(0, range_length - len - 1);
+        
+        if ( sorted_range_min_index > range_length - 1 ) {
+            System.out.println("range cannot be discretized");
+            return;
+        }
+        
+        //System.out.println("range_start            = " + range_start);
+        //System.out.println("range_end              = " + range_end);
+        //System.out.println("range_length           = " + range_length);
+        //System.out.println("min_index              = " + sorted_range_min_index);
+        //System.out.println("max_index              = " + (range_length - 1));
+        //System.out.println("sorted_range_min       = " + sorted_range[sorted_range_min_index]);
+        //System.out.println("sorted_range_max       = " + sorted_range[range_length-1]);
+        
+        final double sorted_range_min = sorted_range[sorted_range_min_index];
+        // set all values in signal less than the sorted_range_min to 0.0
+        for(int i = range_start; i < range_end; i++) {
+            if ( signal[i] < sorted_range_min ) {
+                signal[i] = 0.0;
+            }
+        }
+    }
+    
+    // Define a function that takes an array, start, end, percent
+    // copy array[start, end]
+    // sort the array
+    // compute the start and end index
+    // range_min = sorted_array[start]
+    // range_max = sorted_array[end]
+    // go through array[start, end] and step all indices outslide of [range_min, range_max]
+    // to 0.
+    
+    
+    // 10% coefficients.
+    // Given an array, sort it, then take the top percent
+    public static void topNPercent(double[] ary, double percent) {
+        for(int i = 0; i < ary.length; i++) { System.out.print(ary[i] + " "); }
+        System.out.println();
+        Arrays.sort(ary);
+        for(int i = 0; i < ary.length; i++) { System.out.print(ary[i] + " "); }
+        System.out.println();
+        int len = (int) (ary.length * (percent/100.0));
+        System.out.println(len);
+        int end = ary.length - 1;
+        int start = Math.max(0, end - len + 1);
+        System.out.println("start = " + start + " end = " + end);
+        
+        
     }
     
 }
