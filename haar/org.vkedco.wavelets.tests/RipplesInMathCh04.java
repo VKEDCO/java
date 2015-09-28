@@ -426,7 +426,7 @@ public class RipplesInMathCh04 {
         display_signal(sRange);
         System.out.println("=========================");
     }
-    // debug this, possibly use the max
+    
     static void process_signal_range(double[] signal, int range_start, int range_end, double percent) {
         final int range_length = range_end - range_start + 1;
         double[] sorted_range = new double[range_length];
