@@ -120,32 +120,6 @@ public class CYK {
         System.out.println("Result = " + rslt + "\n");
     }
 
-
-    static void toc_f15_hw06() {
-        CNFG cnfg = new CNFG();
-        cnfg.addProduction("S", "A", "D");
-        cnfg.addProduction("D", "B", "C");
-        cnfg.addProduction("C", "B", "E");
-        cnfg.addProduction("C", "c");
-        cnfg.addProduction("E", "A1", "B");
-        cnfg.addProduction("A1", "a");
-        cnfg.addProduction("B", "B1", "B1");
-        cnfg.addProduction("B", "b");
-        cnfg.addProduction("B1", "b");
-        cnfg.addProduction("A", "a");
-
-        boolean rslt = CYK.isInCFL("abc", cnfg);
-        System.out.println("abc: " + rslt);
-        boolean rslt2 = CYK.isInCFL("abbbabb", cnfg);
-        System.out.println("abbbabb: " + rslt2);
-        boolean rslt3 = CYK.isInCFL("abbc", cnfg);
-        System.out.println("abbc: " + rslt3);
-        boolean rslt4 = CYK.isInCFL("bbc", cnfg);
-        System.out.println("bbc: " + rslt4);
-        boolean rslt5 = CYK.isInCFL("baaba", cnfg);
-        System.out.println("baaba: " + rslt4);
-    }
-     
     public static void main(String[] args) {
         test1();
         test2();
