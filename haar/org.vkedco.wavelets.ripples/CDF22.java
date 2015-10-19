@@ -7,8 +7,6 @@ import org.vkedco.wavelets.utils.Utils;
 /**
  **************************************
  * @author vladimir kulyukin
- * 
- * DEBUG THIS!
  **************************************
  */
 public class CDF22 {
