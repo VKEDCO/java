@@ -67,9 +67,9 @@ public class CDF44 {
             currScale     += 1;
             numScalesToDo -= 1;
             
-            // cdf44[i] is a scaled sample with a mirror wrap-up
+            // D4[i] is a scaled sample with a mirror wrap-up
             D4[i]     = H0*signal[n-2] + H1*signal[n-1] + H2*signal[0] + H3*signal[1];
-            // cdf44[mid+i] is the corresponding wavelet for d4[i]
+            // D4[mid+i] is the corresponding wavelet for d4[i]
             D4[mid+i] = G0*signal[n-2] + G1*signal[n-1] + G2*signal[0] + G3*signal[1];
             
             if ( dbg_flag ) {
@@ -95,7 +95,6 @@ public class CDF44 {
             int midPlus1 = mid + 1;
             if ( dbg_flag ) System.out.println("invTransform for: " + n);
             double rvs[] = new double[n]; // restored values
-            // last smooth val  last coef.  first smooth  first coef
             rvs[0] = IH0*a[mid-1] + IH1*a[n-1] + IH2*a[0] + IH3*a[mid];
             rvs[1] = IG0*a[mid-1] + IG1*a[n-1] + IG2*a[0] + IG3*a[mid];
             if ( dbg_flag ) {
@@ -106,7 +105,6 @@ public class CDF44 {
             }
             j = 2;
             for (i = 0; i < mid-1; i++) {
-                //     smooth val     coef. val       smooth val    coef. val
                 if ( dbg_flag ) {
                     System.out.println("rvs[" + j + "] = " + "IH0*a[" + i + "] + " +
                         "IH1*a[" + (i+mid) + "] + " + "IH2*a[" + (i+1) + "] + " + "IH3*a[" + (i+midPlus1) + "]");
@@ -122,10 +120,7 @@ public class CDF44 {
                 rvs[j++] = IG0*a[i] + IG1*a[i+mid] + IG2*a[i+1] + IG3*a[i+midPlus1];
             }
             System.arraycopy(rvs, 0, a, 0, rvs.length);
-            //for (i = 0; i < n; i++) {
-            //    a[i] = rvs[i];
-            //}
-            
+
             if ( dbg_flag ) System.out.println("invTransform over for: " + n);
         }
     }
@@ -147,7 +142,6 @@ public class CDF44 {
     }
     
     public static void test_fwd_cdf44(double[] s, boolean dbg_flag) {
-        //daub kapdaub = new daub();
         double[] scopy = new double[s.length];
         System.arraycopy(s, 0, scopy, 0, s.length);
         System.out.print("Input: "); display(scopy);
@@ -158,7 +152,6 @@ public class CDF44 {
     
 
     public static void test_fwd_inv_cdf44(double[] s, boolean dbg_flag) {
-        //daub kapdaub = new daub();
         double[] scopy = new double[s.length];
         System.arraycopy(s, 0, scopy, 0, s.length);
         System.out.print("Input: "); display(scopy);
