@@ -1,5 +1,6 @@
 package org.vkedco.wavelets.ripples;
 
+import static org.vkedco.wavelets.ripples.CDF44Dev.display;
 import org.vkedco.wavelets.utils.Utils;
 
 
@@ -38,8 +39,7 @@ public class CDF44 {
     
     public static void orderedDWT(double[] signal, boolean dbg_flag) {
         final int N = signal.length;
-        if ( !Utils.isPowerOf2(N) ) return;
-        if ( N < 4 ) return;
+        if ( N < 4 || !Utils.isPowerOf2(N) ) return;
         int i, j, mid;
         double[] D4 = null;
 
@@ -48,8 +48,8 @@ public class CDF44 {
         int signal_length = N;
         while ( signal_length >= 4 )  {
             mid = signal_length >> 1; // n / 2;
-            if ( dbg_flag ) System.out.println("MID = " + mid);
-            if ( dbg_flag ) System.out.println("signal_length   = " + signal_length);
+            if ( dbg_flag ) System.out.println("MID           = " + mid);
+            if ( dbg_flag ) System.out.println("signal_length = " + signal_length);
             D4 = new double[signal_length]; // temporary array that saves the scalers and wavelets
             for(i = 0, j = 0; j < signal_length-3; i += 1, j += 2) {
                 if ( dbg_flag ) {
@@ -92,76 +92,63 @@ public class CDF44 {
     static void orderedInverseDWT(double[] signal_transform, boolean dbg_flag) {
         final int N = signal_transform.length;
         if ( N < 4 || !Utils.isPowerOf2(N) ) return; // do not inverse in this case
-        for (int n = 4; n <= N; n <<= 1) {
-            int i, j;
-            int mid = n >> 1;
-            int midPlus1 = mid + 1;
-            if ( dbg_flag ) System.out.println("Inverse CDF(4, 4) for: " + n);
-            double rvs[] = new double[n]; // restored values
-            // last smooth val  last coef.  first smooth  first coef
-            rvs[0] = IH0*signal_transform[mid-1] + IH1*signal_transform[n-1] + IH2*signal_transform[0] + IH3*signal_transform[mid];
-            rvs[1] = IG0*signal_transform[mid-1] + IG1*signal_transform[n-1] + IG2*signal_transform[0] + IG3*signal_transform[mid];
+        int transform_length = 4;
+        while ( transform_length <= N ) {
+            int mid = transform_length >> 1;
+            if ( dbg_flag ) System.out.println("MID              = " + mid);
+            if ( dbg_flag ) System.out.println("transform_length = " + transform_length);
+            
+            double rvs[] = new double[transform_length]; // restored values
+            
+            rvs[0] = IH0*signal_transform[mid-1] + IH1*signal_transform[transform_length-1] + IH2*signal_transform[0] + IH3*signal_transform[mid];
+            rvs[1] = IG0*signal_transform[mid-1] + IG1*signal_transform[transform_length-1] + IG2*signal_transform[0] + IG3*signal_transform[mid];
+            
             if ( dbg_flag ) {
-                System.out.println("rvs[" + 0 + "] = " + "IH0*a[" + (mid-1) + "] " +
-                        "IH1*a[" + (n-1) + "] + " + "IH2*a[0] + " + "IH3*a[" + mid + "]");
+                System.out.println("rvs[" + 0 + "] = " + "IH0*a[" + (mid-1) + "] + " +
+                        "IH1*a[" + (transform_length-1) + "] + " + "IH2*a[0] + " + "IH3*a[" + mid + "]");
                 System.out.println("rvs[" + 1 + "] = " + "IG0*a[" + (mid-1) + "] + " +
-                        "IG1*a[" + (n-1) + "] + " + "IG2*a[0] + " + "IG3*a[" + mid + "]");
+                        "IG1*a[" + (transform_length-1) + "] + " + "IG2*a[0] + " + "IG3*a[" + mid + "]");
             }
-            j = 2;
-            for (i = 0; i < mid-1; i++) {
-                //     smooth val     coef. val       smooth val    coef. val
+            
+            int i = 0, j = 2;
+            while ( i < mid-1 ) {
                 if ( dbg_flag ) {
+                    // I am using a to denote signal_transform here.
                     System.out.println("rvs[" + j + "] = " + "IH0*a[" + i + "] + " +
-                        "IH1*a[" + (i+mid) + "] + " + "IH2*a[" + (i+1) + "] + " + "IH3*a[" + (i+midPlus1) + "]");
+                        "IH1*a[" + (mid+i) + "] + " + "IH2*a[" + (i+1) + "] + " + "IH3*a[" + (mid+i+1) + "]");
                 }
-                
-                rvs[j++] = IH0*signal_transform[i] + IH1*signal_transform[i+mid] + IH2*signal_transform[i+1] + IH3*signal_transform[i+midPlus1];
+                //           scalers                     wavelets                       
+                rvs[j] = IH0*signal_transform[i]   + IH1*signal_transform[mid+i] + 
+                         IH2*signal_transform[i+1] + IH3*signal_transform[mid+i+1];
                 
                 if ( dbg_flag ) {
                     System.out.println("rvs[" + j + "] = " + "IG0*a[" + i + "] + " +
-                        "IG1*a[" + (i+mid) + "] + " + "IG2*a[" + (i+1) + "] + " + "IG3*a[" + (i+midPlus1) + "]");
+                        "IG1*a[" + (mid+i) + "] + " + "IG2*a[" + (i+1) + "] + " + "IG3*a[" + (mid+i+1) + "]");
                 }
+                //             scalers                     wavelets
+                rvs[j+1] = IG0*signal_transform[i]   + IG1*signal_transform[mid+i] + 
+                           IG2*signal_transform[i+1] + IG3*signal_transform[mid+i+1];
                 
-                rvs[j++] = IG0*signal_transform[i] + IG1*signal_transform[i+mid] + IG2*signal_transform[i+1] + IG3*signal_transform[i+midPlus1];
+                i += 1; j += 2;
             }
-            System.arraycopy(rvs, 0, signal_transform, 0, rvs.length);
-            //for (i = 0; i < n; i++) {
-            //    a[i] = rvs[i];
-            //}
             
-            if ( dbg_flag ) System.out.println("invTransform over for: " + n);
+            System.arraycopy(rvs, 0, signal_transform, 0, rvs.length);
+            transform_length <<= 1;
+           
         }
-    }
-    
-    
-    
-    static void display(double[] a) {
-        for(int i = 0; i < a.length; i++) {
-            System.out.print(a[i] + " ");
-        }
-        System.out.println();
-    }
-    
-    static void display(int[] a) {
-        for(int i = 0; i < a.length; i++) {
-            System.out.print(a[i] + " ");
-        }
-        System.out.println();
     }
     
     public static void test_fwd_cdf44(double[] s, boolean dbg_flag) {
-        //daub kapdaub = new daub();
         double[] scopy = new double[s.length];
         System.arraycopy(s, 0, scopy, 0, s.length);
-        System.out.print("Input: "); display(scopy);
+        System.out.print("Input: "); Utils.displaySample(scopy);
         CDF44.orderedDWT(s, dbg_flag);
-        System.out.print("FWD CDF(4,4): "); display(s);
+        System.out.print("FWD CDF(4,4): "); Utils.displaySample(s);
         System.out.println();
     }
     
 
     public static void test_fwd_inv_cdf44(double[] s, boolean dbg_flag) {
-        //daub kapdaub = new daub();
         double[] scopy = new double[s.length];
         System.arraycopy(s, 0, scopy, 0, s.length);
         System.out.print("Input: "); display(scopy);
@@ -197,7 +184,7 @@ public class CDF44 {
     static double[] a04b = {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     
     public static void main(String[] args) { 
-        test_fwd_inv_cdf44(a02a, true);
+        test_fwd_inv_cdf44(a04b, true);
     }
 
 }
