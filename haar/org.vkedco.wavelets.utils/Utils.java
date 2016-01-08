@@ -15,6 +15,14 @@ public class Utils {
         }
         System.out.println();
     }
+    
+    public static void displaySample(int[] sample) {
+        System.out.print("Sample: ");
+        for (int i = 0; i < sample.length; i++) {
+            System.out.print(sample[i] + " ");
+        }
+        System.out.println();
+    }
 
     public static boolean isPowerOf2(int n) {
         if (n < 1) {
