@@ -1,9 +1,11 @@
 package org.vkedco.wavelets.utils;
 
 /**
- *
+ *************************************************************** 
  * @author vladimir kulyukin
+ ***************************************************************
  */
+
 public class Utils {
     
     public static void displaySample(double[] sample) {
@@ -21,6 +23,11 @@ public class Utils {
             double p_of_2 = (Math.log(n) / Math.log(2));
             return Math.abs(p_of_2 - (int) p_of_2) == 0;
         }
+    }
+    
+    // if n = 2^x; this method returns x
+    public static int powVal(int n) {
+        return (int)(Math.log(n)/Math.log(2));
     }
     
     public static int largestPowerOf2NoGreaterThan(int i) {
