@@ -55,9 +55,9 @@ public class CDF44 {
                 if ( dbg_flag ) {
                     final String cursig = "s^{" + (currScale+1) + "}_{" + (numScalesToDo-1) + "}";
                     final String prvsig = "s^{" + currScale + "}_{" + numScalesToDo + "}";
-                    System.out.print("SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + j + "]+H1*" + prvsig + "[" + (j+1) + "]+" +
+                    System.out.println("FWD SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + j + "]+H1*" + prvsig + "[" + (j+1) + "]+" +
                         "H2*" + prvsig + "[" + (j+2) + "]+" + "H3*" + prvsig + "[" + (j+3) + "]; " );
-                    System.out.println("WVL: " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + j + "]+" + "G1*" + prvsig + "[" + (j+1) + "]+" +
+                    System.out.println("FWD WVL:  " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + j + "]+" + "G1*" + prvsig + "[" + (j+1) + "]+" +
                         "G2*" + prvsig + "[" + (j+2) + "]+" + "G3*" + prvsig + "[" + (j+3) + "]" );
                 }
                 // cdf44[i] is a scaled sample
@@ -77,9 +77,9 @@ public class CDF44 {
             if ( dbg_flag ) {
                 final String cursig = "s^{" + currScale + "}_{" + numScalesToDo + "}";
                 final String prvsig = "s^{" + (currScale-1) + "}_{" + (numScalesToDo+1) + "}";
-                System.out.print("SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + (signal_length-2) + "]+H1*" + prvsig + "[" + (signal_length-1) + "]+" +
+                System.out.println("FWD SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + (signal_length-2) + "]+H1*" + prvsig + "[" + (signal_length-1) + "]+" +
                        "H2*" + prvsig + "[" + 0 + "]+" + "H3*" + prvsig + "[" + 1 + "]; " );
-                System.out.println("WVL: " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + (signal_length-2) + "]+" + "G1*" + prvsig + "[" + (signal_length-1) + "]+" +
+                System.out.println("FWD WVL:  " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + (signal_length-2) + "]+" + "G1*" + prvsig + "[" + (signal_length-1) + "]+" +
                        "G2*" + prvsig + "[" + 0 + "]+" + "G3*" + prvsig + "[" + 1 + "]" );
             }
             
@@ -89,54 +89,82 @@ public class CDF44 {
         }
     }
     
+    // ordered inverse DWT; set dbg_flag to false if debugging messages are not
+    // needed
     static void orderedInverseDWT(double[] signal_transform, boolean dbg_flag) {
         final int N = signal_transform.length;
         if ( N < 4 || !Utils.isPowerOf2(N) ) return; // do not inverse in this case
+        
+        int numInvScalesToDo = Utils.powVal(N)-1; 
+        int currInvScale     = 0;
         int transform_length = 4;
+        
         while ( transform_length <= N ) {
             int mid = transform_length >> 1;
             if ( dbg_flag ) System.out.println("MID              = " + mid);
             if ( dbg_flag ) System.out.println("transform_length = " + transform_length);
             
-            double rvs[] = new double[transform_length]; // restored values
+            double[] inv_sig = new double[transform_length]; // restored values
             
-            rvs[0] = IH0*signal_transform[mid-1] + IH1*signal_transform[transform_length-1] + IH2*signal_transform[0] + IH3*signal_transform[mid];
-            rvs[1] = IG0*signal_transform[mid-1] + IG1*signal_transform[transform_length-1] + IG2*signal_transform[0] + IG3*signal_transform[mid];
+            String cur_sig = null;
+            String prv_sig = null;
             
             if ( dbg_flag ) {
-                System.out.println("rvs[" + 0 + "] = " + "IH0*a[" + (mid-1) + "] + " +
-                        "IH1*a[" + (transform_length-1) + "] + " + "IH2*a[0] + " + "IH3*a[" + mid + "]");
-                System.out.println("rvs[" + 1 + "] = " + "IG0*a[" + (mid-1) + "] + " +
-                        "IG1*a[" + (transform_length-1) + "] + " + "IG2*a[0] + " + "IG3*a[" + mid + "]");
+                cur_sig = "s^{" + (numInvScalesToDo-1) + "}_{"  + (currInvScale+1) + "}";
+                prv_sig = "s^{" + numInvScalesToDo     + "}_{"  + currInvScale     + "}";
             }
             
+            inv_sig[0] = IH0*signal_transform[mid-1] + IH1*signal_transform[transform_length-1] + IH2*signal_transform[0] + IH3*signal_transform[mid];
+            inv_sig[1] = IG0*signal_transform[mid-1] + IG1*signal_transform[transform_length-1] + IG2*signal_transform[0] + IG3*signal_transform[mid];
+            
+            if ( dbg_flag ) {
+                System.out.println("INV SCL: " + cur_sig + "[" + 0 + "] = " + "IH0*" +  prv_sig + "[" + (mid-1) + "] + " +
+                        "IH1*" +  prv_sig + "[" + (transform_length-1) + "] + " + "IH2*" + prv_sig + "[0] + " + "IH3*" + prv_sig + "[" + mid + "]");
+                System.out.println("INV WVL: " + cur_sig + "[" + 1 + "] = " + "IG0*" + prv_sig + "[" + (mid-1) + "] + " +
+                        "IG1*" + prv_sig +  "[" + (transform_length-1) + "] + " + "IG2*" + prv_sig + "[0] + " + "IG3*" + prv_sig + "[" + mid + "]");
+            }
+            
+            
             int i = 0, j = 2;
+            
             while ( i < mid-1 ) {
                 if ( dbg_flag ) {
-                    // I am using a to denote signal_transform here.
-                    System.out.println("rvs[" + j + "] = " + "IH0*a[" + i + "] + " +
-                        "IH1*a[" + (mid+i) + "] + " + "IH2*a[" + (i+1) + "] + " + "IH3*a[" + (mid+i+1) + "]");
+                    cur_sig = "s^{" + (numInvScalesToDo-1) + "}_{" + (currInvScale+1) + "}";
+                    prv_sig = "s^{" + numInvScalesToDo     + "}_{" + currInvScale     + "}";
                 }
+                
+                if ( dbg_flag ) {
+                    System.out.println("INV SCL: " + cur_sig + "[" + j + "] = " + "IH0*" + prv_sig + "[" + i + "] + " +
+                        "IH1*" + prv_sig + "[" + (mid+i) + "] + " + "IH2*" + prv_sig + "[" + (i+1) + "] + " + 
+                        "IH3*" + prv_sig + "[" + (mid+i+1) + "]");
+                }
+                
                 //           scalers                     wavelets                       
-                rvs[j] = IH0*signal_transform[i]   + IH1*signal_transform[mid+i] + 
+                inv_sig[j] = IH0*signal_transform[i]   + IH1*signal_transform[mid+i] + 
                          IH2*signal_transform[i+1] + IH3*signal_transform[mid+i+1];
                 
                 if ( dbg_flag ) {
-                    System.out.println("rvs[" + j + "] = " + "IG0*a[" + i + "] + " +
-                        "IG1*a[" + (mid+i) + "] + " + "IG2*a[" + (i+1) + "] + " + "IG3*a[" + (mid+i+1) + "]");
+                    System.out.println("INV WVL: " + cur_sig + "[" + (j+1) + "] = " + "IG0*" + prv_sig + "[" + i + "] + " +
+                        "IG1*" + prv_sig + "[" + (mid+i) + "] + " + "IG2*" + prv_sig + "[" + (i+1) + "] + " + 
+                        "IG3*" + prv_sig + "[" + (mid+i+1) + "]");
                 }
+                
                 //             scalers                     wavelets
-                rvs[j+1] = IG0*signal_transform[i]   + IG1*signal_transform[mid+i] + 
-                           IG2*signal_transform[i+1] + IG3*signal_transform[mid+i+1];
+                inv_sig[j+1] = IG0*signal_transform[i]   + IG1*signal_transform[mid+i] + 
+                               IG2*signal_transform[i+1] + IG3*signal_transform[mid+i+1];
                 
                 i += 1; j += 2;
             }
             
-            System.arraycopy(rvs, 0, signal_transform, 0, rvs.length);
-            transform_length <<= 1;
-           
+            currInvScale     += 1;
+            numInvScalesToDo -= 1;
+            
+            System.arraycopy(inv_sig, 0, signal_transform, 0, inv_sig.length);
+            transform_length <<= 1; // divide by 2
         }
     }
+    
+
     
     public static void test_fwd_cdf44(double[] s, boolean dbg_flag) {
         double[] scopy = new double[s.length];
