@@ -5,8 +5,9 @@ import org.vkedco.wavelets.utils.Utils;
 
 
 /**
- *
+ ****************************************
  * @author vladimir kulyukin
+ ****************************************
  */
 public class CDF44 {
     static final double SQRT_OF_3 = Math.sqrt(3);
@@ -91,7 +92,7 @@ public class CDF44 {
     
     // ordered inverse DWT; set dbg_flag to false if debugging messages are not
     // needed
-    static void orderedInverseDWT(double[] signal_transform, boolean dbg_flag) {
+    public static void orderedInverseDWT(double[] signal_transform, boolean dbg_flag) {
         final int N = signal_transform.length;
         if ( N < 4 || !Utils.isPowerOf2(N) ) return; // do not inverse in this case
         
@@ -164,8 +165,6 @@ public class CDF44 {
         }
     }
     
-
-    
     public static void test_fwd_cdf44(double[] s, boolean dbg_flag) {
         double[] scopy = new double[s.length];
         System.arraycopy(s, 0, scopy, 0, s.length);
@@ -175,27 +174,18 @@ public class CDF44 {
         System.out.println();
     }
     
-
     public static void test_fwd_inv_cdf44(double[] s, boolean dbg_flag) {
-        double[] scopy = new double[s.length];
-        System.arraycopy(s, 0, scopy, 0, s.length);
-        System.out.print("Input: "); display(scopy);
+        System.out.print("Input: "); display(s);
+        
         CDF44.orderedDWT(s, dbg_flag);
+        
         System.out.print("FWD CDF(4,4): "); display(s);
         System.out.println();
         
         CDF44.orderedInverseDWT(s, dbg_flag);
+        
         System.out.print("INV CDF(4,4): "); display(s);
         System.out.println();
-    }
-    
-    public static boolean are_D4_outputs_equal(double[] output1, double[] output2) {
-        if ( output1.length != output2.length ) return false;
-        for(int i = 0; i < output1.length; i++) {
-            if ( output1[i] != output2[i] )
-                return false;
-        }
-        return true;
     }
      
     static double[] a01a = {1, 2, 3, 4};
