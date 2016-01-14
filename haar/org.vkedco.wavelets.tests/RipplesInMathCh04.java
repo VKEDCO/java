@@ -4,6 +4,9 @@ import java.util.Arrays;
 import org.vkedco.calc.utils.Partition;
 import org.vkedco.calc.utils.Ripples_F_p25;
 import org.vkedco.wavelets.haar.OneDHaar;
+import org.vkedco.wavelets.ripples.CDF44;
+import org.vkedco.wavelets.utils.Utils;
+
 
 /**
  **************************************************************** 
@@ -394,8 +397,11 @@ public class RipplesInMathCh04 {
     }
     
     public static void main(String[] args) {
-        //fig_4_8_s6_d06_d07_d08_p30();
-        fig_4_9_p31();
+        //fig_4_8_s06_d06_d07_d8_p30();
+        //fig_4_9_p31();
+        //fig_4_10_s06_d06_d7_d08_p32();
+        fig_4_10_s6_d06_d07_d08_p32();
+        //testTopNPercent();
     }
    
     static void fig_4_9_p31() {
@@ -412,10 +418,10 @@ public class RipplesInMathCh04 {
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
         
         double percent = 10.0;
-        process_signal_range(sRange, D8_START, D8_END, percent);
-        process_signal_range(sRange, D7_START, D7_END, percent);
-        process_signal_range(sRange, D6_START, D6_END, percent);
-        process_signal_range(sRange, S6_START, S6_END, percent);
+        keep_top_N_percent(sRange, D8_START, D8_END, percent);
+        keep_top_N_percent(sRange, D7_START, D7_END, percent);
+        keep_top_N_percent(sRange, D6_START, D6_END, percent);
+        keep_top_N_percent(sRange, S6_START, S6_END, percent);
         
         System.out.println("=========================");
         System.out.println("Processed Signal with Noise:");
@@ -427,7 +433,89 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");
     }
     
-    static void process_signal_range(double[] signal, int range_start, int range_end, double percent) {
+    // =========================================================================
+    static void multires_fig_4_10_p32(String message, int range_start, int range_end) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        
+        CDF44.orderedDWTForNumIters(sRange, 3, false);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, 3, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void multires_fig_4_10_p32(String message, int range_start, int range_end, double top_n_percent) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        
+        CDF44.orderedDWTForNumIters(sRange, 3, false);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        // keep only top_n percent of the computed coeffs in range
+        keep_top_N_percent(signal, range_start, range_end, top_n_percent);
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, 3, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    // d8 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s06_d06_d07_d8_p32() {
+        multires_fig_4_10_p32("06-06-07-d8, Fig. 4.10, p. 32", D8_START, D8_END);
+    }
+    
+    // d7 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s06_d06_d7_d08_p32() {
+        multires_fig_4_10_p32("06-06-d7-08, Fig. 4.10, p. 32", D7_START, D7_END);
+    }
+    
+    // d6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s06_d6_d07_d08_p32() {
+        multires_fig_4_10_p32("06-d6-07-08, Fig. 4.10, p. 30", D6_START, D6_END);
+    }
+    
+    // s6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s6_d06_d07_d08_p32() {
+        multires_fig_4_10_p32("s6-06-07-08, Fig. 4.10, p. 32", S6_START, S6_END);
+    }
+    
+    static void keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
         final int range_length = range_end - range_start + 1;
         double[] sorted_range = new double[range_length];
         // copy the signal segment into sorted_range
@@ -480,9 +568,16 @@ public class RipplesInMathCh04 {
         System.out.println(len);
         int end = ary.length - 1;
         int start = Math.max(0, end - len + 1);
-        System.out.println("start = " + start + " end = " + end);
+        System.out.println("start = " + start + " end = " + end); 
+    }
+    
+    static void testTopNPercent() {
+        double[] a1 = {20, 1, 17, 11, 2, 8, 10, 4, 9, 19};
         
-        
+        topNPercent(a1, 20.0);
+        Utils.displaySample(a1);
+        keep_top_N_percent(a1, 0, 9, 10.0);
+        Utils.displaySample(a1);
     }
     
 }
