@@ -66,4 +66,27 @@ public class Utils {
             return subsignal;
         }
     }
+    
+    public static boolean areSignalsEqual(double[] output1, double[] output2) {
+        final int n = output1.length;
+        if ( output2.length != n ) return false;
+        for(int i = 0; i < n; i++) {
+            if ( output1[i] != output2[i] ) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static boolean areSignalsEqual(double[] output1, double[] output2, double thresh) {
+        final int n = output1.length;
+        if ( output2.length != n ) return false;
+        for(int i = 0; i < n; i++) {
+            if ( Math.abs(output1[i] - output2[i]) > thresh ) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }
