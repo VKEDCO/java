@@ -1,8 +1,8 @@
 package org.vkedco.wavelets.ripples;
 
 import static org.vkedco.wavelets.ripples.CDF44Dev.display;
+import org.vkedco.wavelets.tests.CDF44Tests;
 import org.vkedco.wavelets.utils.Utils;
-
 
 /**
  ****************************************
@@ -40,7 +40,10 @@ public class CDF44 {
     
     public static void orderedDWT(double[] signal, boolean dbg_flag) {
         final int N = signal.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) return;
+        if ( N < 4 || !Utils.isPowerOf2(N) ) {
+            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
+            return;
+        }
         int i, j, mid;
         double[] D4 = null;
 
@@ -90,9 +93,12 @@ public class CDF44 {
         }
     }
     
-    public static void orderedDWTForNumIters(double[] signal, boolean dbg_flag, int num_iters) {
+    public static void orderedDWTForNumIters(double[] signal, int num_iters, boolean dbg_flag) {
         final int N = signal.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) return;
+        if ( N < 4 || !Utils.isPowerOf2(N) ) {
+            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
+            return;
+        }
         int i, j, mid;
         double[] D4 = null;
 
@@ -153,8 +159,11 @@ public class CDF44 {
     // needed
     public static void orderedInverseDWT(double[] signal_transform, boolean dbg_flag) {
         final int N = signal_transform.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) return; // do not inverse in this case
-        
+        if ( N < 4 || !Utils.isPowerOf2(N) ) {
+            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
+            return;
+        } 
+          
         int numInvScalesToDo = Utils.powVal(N)-1; 
         int currInvScale     = 0;
         int transform_length = 4;
@@ -228,9 +237,12 @@ public class CDF44 {
         }
     }
     
-    public static void orderedInverseDWTForNumIters(double[] signal_transform, boolean dbg_flag, int num_iters) {
+    public static void orderedInverseDWTForNumIters(double[] signal_transform, int num_iters, boolean dbg_flag) {
         final int N = signal_transform.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) return; // do not inverse in this case
+        if ( N < 4 || !Utils.isPowerOf2(N) ) {
+            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
+            return;
+        }  
         
         if ( dbg_flag ) { 
             System.out.print("<=INPUT: "); Utils.displaySample(signal_transform);
@@ -332,17 +344,27 @@ public class CDF44 {
         System.out.println();
     }
     
-    public static void test_fwd_inv_cdf44_for_num_iters(double[] s, boolean dbg_flag, int num_iters) {
+    public static void test_fwd_inv_cdf44_for_num_iters(double[] s, int num_iters, boolean dbg_flag) {
         System.out.print("Input: "); display(s);
+        double[] scopy = new double[s.length];
+        System.arraycopy(s, 0, scopy, 0, scopy.length);
         
-        CDF44.orderedDWTForNumIters(s, dbg_flag, num_iters);
-        
+        CDF44.orderedDWTForNumIters(s, num_iters, dbg_flag);
+       
         System.out.print("FWD CDF(4,4) for num iters " + num_iters + ": "); display(s);
         System.out.println();
         
-        CDF44.orderedInverseDWTForNumIters(s, dbg_flag, num_iters);
+        CDF44.orderedInverseDWTForNumIters(s, num_iters, dbg_flag);
         
         System.out.print("INV CDF(4,4) for num iters " + num_iters + ": "); display(s);
+        //System.out.print("SCOPY "); display(scopy);
+        if ( Utils.areSignalsEqual(s, scopy, 0.0001) ) {
+            System.out.println("CONVERSION TRUE");
+        }
+        else {
+            System.out.println("CONVERSION FALSE");
+        }
+        
         System.out.println();
     }
      
@@ -361,7 +383,8 @@ public class CDF44 {
     
 
     public static void main(String[] args) { 
-        test_fwd_inv_cdf44_for_num_iters(a04a, true, 3);
+        test_fwd_inv_cdf44(a02a, false);
+        test_fwd_inv_cdf44(a02b, false);
     }
 
 }
