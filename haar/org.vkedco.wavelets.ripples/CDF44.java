@@ -1,6 +1,5 @@
 package org.vkedco.wavelets.ripples;
 
-import static org.vkedco.wavelets.ripples.CDF44Dev.display;
 import org.vkedco.wavelets.utils.Utils;
 
 /**
@@ -330,33 +329,33 @@ public class CDF44 {
     }
     
     public static void test_fwd_inv_cdf44(double[] s, boolean dbg_flag) {
-        System.out.print("Input: "); display(s);
+        System.out.print("Input: "); Utils.displaySample(s);
         
         CDF44.orderedDWT(s, dbg_flag);
         
-        System.out.print("FWD CDF(4,4): "); display(s);
+        System.out.print("FWD CDF(4,4): "); Utils.displaySample(s);
         System.out.println();
         
         CDF44.orderedInverseDWT(s, dbg_flag);
         
-        System.out.print("INV CDF(4,4): "); display(s);
+        System.out.print("INV CDF(4,4): "); Utils.displaySample(s);
         System.out.println();
     }
     
     public static void test_fwd_inv_cdf44_for_num_iters(double[] s, int num_iters, boolean dbg_flag) {
-        System.out.print("Input: "); display(s);
+        System.out.print("Input: "); Utils.displaySample(s);
         double[] scopy = new double[s.length];
         System.arraycopy(s, 0, scopy, 0, scopy.length);
         
         CDF44.orderedDWTForNumIters(s, num_iters, dbg_flag);
        
-        System.out.print("FWD CDF(4,4) for num iters " + num_iters + ": "); display(s);
+        System.out.print("FWD CDF(4,4) for num iters " + num_iters + ": "); Utils.displaySample(s);
         System.out.println();
         
         CDF44.orderedInverseDWTForNumIters(s, num_iters, dbg_flag);
         
-        System.out.print("INV CDF(4,4) for num iters " + num_iters + ": "); display(s);
-        //System.out.print("SCOPY "); display(scopy);
+        System.out.print("INV CDF(4,4) for num iters " + num_iters + ": "); Utils.displaySample(s);
+
         if ( Utils.areSignalsEqual(s, scopy, 0.0001) ) {
             System.out.println("CONVERSION TRUE");
         }
