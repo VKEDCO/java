@@ -396,10 +396,6 @@ public class RipplesInMathCh04 {
         multires_fig_4_8_p30("s6-06-07-08, Fig. 4.8, p. 30", S6_START, S6_END);
     }
     
-    public static void main(String[] args) {
-        fig_4_11_p32_top_n(50.0);
-    }
-   
     static void fig_4_9_p31(double percent) {
         for(int i = 0; i < 512; i++)  {
             sRange[i] = sRipples_F_p25.v(sDomain[i]);
@@ -520,19 +516,55 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics."
-    static void fig_4_11_top_20_p32() {
-        fig_4_11_p32_top_n(20.0);
-    }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics."
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=10%
     static void fig_4_11_top_10_p32() {
         fig_4_11_p32_top_n(10.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics."
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=20%
+    static void fig_4_11_top_20_p32() {
+        fig_4_11_p32_top_n(20.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=30%
+    static void fig_4_11_top_30_p32() {
+        fig_4_11_p32_top_n(30.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=40%
     static void fig_4_11_top_40_p32() {
         fig_4_11_p32_top_n(40.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=50%
+    static void fig_4_11_top_50_p32() {
+        fig_4_11_p32_top_n(50.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=60%
+    static void fig_4_11_top_60_p32() {
+        fig_4_11_p32_top_n(60.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=70%
+    static void fig_4_11_top_70_p32() {
+        fig_4_11_p32_top_n(70.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=80%
+    static void fig_4_11_top_80_p32() {
+        fig_4_11_p32_top_n(80.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=90%
+    static void fig_4_11_top_90_p32() {
+        fig_4_11_p32_top_n(90.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=100%
+    static void fig_4_11_top_100_p32() {
+        fig_4_11_p32_top_n(100.0);
     }
     
     // =============================
@@ -558,6 +590,9 @@ public class RipplesInMathCh04 {
     }
 
     static void keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
+        if ( percent < 0.0 || percent > 100.0 ) return;
+        if ( percent == 100.0 ) return; // no need to do anything
+        
         final int range_length = range_end - range_start + 1;
         double[] sorted_range = new double[range_length];
         // copy the signal segment into sorted_range
@@ -570,6 +605,7 @@ public class RipplesInMathCh04 {
             System.out.println("range cannot be discretized");
             return;
         }
+        
         /*
         System.out.println("range_start            = " + range_start);
         System.out.println("range_end              = " + range_end);
@@ -580,6 +616,7 @@ public class RipplesInMathCh04 {
         System.out.println("sorted_range_min       = " + sorted_range[sorted_range_min_index]);
         System.out.println("sorted_range_max       = " + sorted_range[range_length-1]);
         */
+                
         final double sorted_range_min = Math.abs(sorted_range[sorted_range_min_index]);
         // set all values in signal less than the sorted_range_min to 0.0
         for(int i = range_start; i < range_end; i++) {
@@ -617,10 +654,14 @@ public class RipplesInMathCh04 {
     static void testTopNPercent() {
         double[] a1 = {20, 1, 17, 11, 2, 8, 10, 4, 9, 19};
         
-        topNPercent(a1, 20.0);
+        topNPercent(a1, 100.0);
         Utils.displaySample(a1);
-        keep_top_N_percent(a1, 0, 9, 50.0);
+        keep_top_N_percent(a1, 0, 9, 100.0);
         Utils.displaySample(a1);
     }
     
+    public static void main(String[] args) {
+        fig_4_11_top_100_p32();
+        //testTopNPercent();
+    }
 }
