@@ -1,388 +1,767 @@
-package org.vkedco.wavelets.ripples;
+package org.vkedco.wavelets.tests;
 
+import java.util.Arrays;
+import org.vkedco.calc.utils.Partition;
+import org.vkedco.calc.utils.Ripples_F_p25;
+import org.vkedco.calc.utils.Ripples_F_p33;
+import org.vkedco.wavelets.haar.OneDHaar;
+import org.vkedco.wavelets.ripples.CDF44;
 import org.vkedco.wavelets.utils.Utils;
 
+
 /**
- ****************************************
- * @author vladimir kulyukin
- ****************************************
+ **************************************************************** 
+ * Programmatic Notes on Ch. 4 in "Ripples in Mathematics" by
+ * A. Jensen & A. la Cour-Harbo.
+ * 
+ * @author Vladimir Kulyukin
+ *****************************************************************
  */
-public class CDF44 {
-    static final double SQRT_OF_3 = Math.sqrt(3);
-    static final double SQRT_OF_2 = Math.sqrt(2);
-    static final double FOUR_SQRT_OF_2 = 4*SQRT_OF_2;
-    
-    // CDF(4,4) Forward signal coefficients
-    static final double H0 = (1 + SQRT_OF_3)/FOUR_SQRT_OF_2;
-    static final double H1 = (3 + SQRT_OF_3)/FOUR_SQRT_OF_2;
-    static final double H2 = (3 - SQRT_OF_3)/FOUR_SQRT_OF_2;
-    static final double H3 = (1 - SQRT_OF_3)/FOUR_SQRT_OF_2;
-    
-    // CDF(4, 4) Forward wavelet coefficients
-    static final double G0 = H3;
-    static final double G1 = -H2;
-    static final double G2 = H1;
-    static final double G3 = -H0;
-    
-    // CDF(4, 4) Inverse signal coefficients
-    static final double IH0 = H2;
-    static final double IH1 = G2;  // h1
-    static final double IH2 = H0;
-    static final double IH3 = G0;  // h3
-    
-    // CDF(4, 4) Inverse signal coefficients
-    static final double IG0 = H3;
-    static final double IG1 = G3;  // -h0
-    static final double IG2 = H1;
-    static final double IG3 = G1;  // -h2
-    
-    public static void orderedDWT(double[] signal, boolean dbg_flag) {
-        final int N = signal.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) {
-            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
-            return;
-        }
-        int i, j, mid;
-        double[] D4 = null;
 
-        int numScalesToDo = Utils.powVal(N)-1; 
-        int currScale  = 0;
-        int signal_length = N;
-        while ( signal_length >= 4 )  {
-            mid = signal_length >> 1; // n / 2;
-            if ( dbg_flag ) System.out.println("MID           = " + mid);
-            if ( dbg_flag ) System.out.println("signal_length = " + signal_length);
-            D4 = new double[signal_length]; // temporary array that saves the scalers and wavelets
-            for(i = 0, j = 0; j < signal_length-3; i += 1, j += 2) {
-                if ( dbg_flag ) {
-                    final String cursig = "s^{" + (currScale+1) + "}_{" + (numScalesToDo-1) + "}";
-                    final String prvsig = "s^{" + currScale + "}_{" + numScalesToDo + "}";
-                    System.out.println("FWD SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + j + "]+H1*" + prvsig + "[" + (j+1) + "]+" +
-                        "H2*" + prvsig + "[" + (j+2) + "]+" + "H3*" + prvsig + "[" + (j+3) + "]; " );
-                    System.out.println("FWD WVL:  " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + j + "]+" + "G1*" + prvsig + "[" + (j+1) + "]+" +
-                        "G2*" + prvsig + "[" + (j+2) + "]+" + "G3*" + prvsig + "[" + (j+3) + "]" );
-                }
-                // cdf44[i] is a scaled sample
-                D4[i]     = H0*signal[j] + H1*signal[j+1] + H2*signal[j+2] + H3*signal[j+3];
-                // cdf44[mid+i] is the corresponding wavelet for d4[i]
-                D4[mid+i] = G0*signal[j] + G1*signal[j+1] + G2*signal[j+2] + G3*signal[j+3];
-            }
+public class RipplesInMathCh04 {
+    
+    public enum SIGNAL { D10, D9, D8, D7, D6, S6 };
+    
+    static double[] sDomain = Partition.partition(0, 511, 1);
+    static double[] sDomainFig_4_12_p33 = Partition.partition(0.0, 1.0, 1.0/1024.0);
+    static double[] sRangeFig_4_12_p33 = new double[1024];
+    static double[] sRange  = new double[512];
+    static Ripples_F_p25 sRipples_F_p25 = new Ripples_F_p25();
+    static Ripples_F_p33 sRipples_F_p33 = new Ripples_F_p33();
+    
+    static final int D10_START_1024  = 512;
+    static final int D10_END_1024    = 1023;
+    
+    static final int D9_START_1024   = 256;
+    static final int D9_END_1024     = 511;
+    
+    static final int D8_START_1024   = 128;
+    static final int D8_END_1024     = 255;
+    
+    static final int D7_START_1024   = 64;
+    static final int D7_END_1024     = 127;
+    
+    static final int D6_START_1024   = 32;
+    static final int D6_END_1024     = 63;
+    
+    static final int S6_START_1024   = 0;
+    static final int S6_END_1024     = 31;
+    
+    static final int D8_START_512   = 256; 
+    static final int D8_END_512     = 511;
+    static final int D7_START_512   = 128; 
+    static final int D7_END_512     = 255;
+    static final int D6_START_512   = 64; 
+    static final int D6_END_512     = 127;
+    static final int S6_START_512   = 0;   
+    static final int S6_END_512     = 63;
+    
+    // prints the range values for the plot in Fig. 4.1, p. 26
+    // in "Ripples in Mathematics."
+    static void fig_4_1_p26() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        display_signal(sRange);
+    }
+    // prints the range values for the plot in Fig. 4.2, p.26
+    // in "Ripples in Mathematics."
+    static void fig_4_2_p26() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        
+        for(int i = 0; i < 512; i++)  {
+            System.out.println(sRange[i]);
+        }
+    }
+    
+    // d8 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
+    static void fig_4_3_d8_p27() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, D8_START_512, D8_END_512);
+    }
+    
+    // d7 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
+    static void fig_4_3_d7_p27() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, D7_START_512, D7_END_512);
+    }
+    
+    // d6 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
+    static void fig_4_3_d6_p27() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, D6_START_512, D6_END_512);
+    }
+    
+    // s6 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
+    static void fig_4_3_s6_p27() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, S6_START_512, S6_END_512);
+    }
+    
+    static void fig_4_12_p33() {
+        
+        for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
+        
+        //CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        display_signal(sRangeFig_4_12_p33);
+    }
+    
+    static void multires_fig_4_13_p34(String message, int range_start, int range_end) {
+        for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
 
-            currScale     += 1;
-            numScalesToDo -= 1;
-            
-            // cdf44[i] is a scaled sample with a mirror wrap-up
-            D4[i]     = H0*signal[signal_length-2] + H1*signal[signal_length-1] + H2*signal[0] + H3*signal[1];
-            // cdf44[mid+i] is the corresponding wavelet for d4[i]
-            D4[mid+i] = G0*signal[signal_length-2] + G1*signal[signal_length-1] + G2*signal[0] + G3*signal[1];
-            
-            if ( dbg_flag ) {
-                final String cursig = "s^{" + currScale + "}_{" + numScalesToDo + "}";
-                final String prvsig = "s^{" + (currScale-1) + "}_{" + (numScalesToDo+1) + "}";
-                System.out.println("FWD SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + (signal_length-2) + "]+H1*" + prvsig + "[" + (signal_length-1) + "]+" +
-                       "H2*" + prvsig + "[" + 0 + "]+" + "H3*" + prvsig + "[" + 1 + "]; " );
-                System.out.println("FWD WVL:  " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + (signal_length-2) + "]+" + "G1*" + prvsig + "[" + (signal_length-1) + "]+" +
-                       "G2*" + prvsig + "[" + 0 + "]+" + "G3*" + prvsig + "[" + 1 + "]" );
+        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        double[] signal = new double[sRangeFig_4_12_p33.length];
+        for(int i = 0; i < 1024; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRangeFig_4_12_p33[i];
             }
-            
-            System.arraycopy(D4, 0, signal, 0, D4.length);
-            D4 = null;
-            signal_length >>= 1; // signal_length gets halved at each iteration/scale
+            else {
+                signal[i] = 0;
+            }
         }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, 6, false);
+        display_signal(signal);
+        System.out.println("=========================");
     }
     
-    public static void orderedDWTForNumIters(double[] signal, int num_iters, boolean dbg_flag) {
-        final int N = signal.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) {
-            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
-            return;
-        }
-        int i, j, mid;
-        double[] D4 = null;
-
-        if ( dbg_flag ) { 
-            System.out.print("=>INPUT: "); Utils.displaySample(signal);
-        }
-        
-        int numScalesToDo = Utils.powVal(N)-1; 
-        int currScale  = 0;
-        int signal_length = N;
-        while ( signal_length >= 4 )  {
-            
-            mid = signal_length >> 1; // n / 2;
-            if ( dbg_flag ) System.out.println("MID           = " + mid);
-            if ( dbg_flag ) System.out.println("signal_length = " + signal_length);
-            D4 = new double[signal_length]; // temporary array that saves the scalers and wavelets
-            for(i = 0, j = 0; j < signal_length-3; i += 1, j += 2) {
-                if ( dbg_flag ) {
-                    final String cursig = "s^{" + (currScale+1) + "}_{" + (numScalesToDo-1) + "}";
-                    final String prvsig = "s^{" + currScale + "}_{" + numScalesToDo + "}";
-                    System.out.println("FWD SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + j + "]+H1*" + prvsig + "[" + (j+1) + "]+" +
-                        "H2*" + prvsig + "[" + (j+2) + "]+" + "H3*" + prvsig + "[" + (j+3) + "]; " );
-                    System.out.println("FWD WVL:  " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + j + "]+" + "G1*" + prvsig + "[" + (j+1) + "]+" +
-                        "G2*" + prvsig + "[" + (j+2) + "]+" + "G3*" + prvsig + "[" + (j+3) + "]" );
-                }
-                // cdf44[i] is a scaled sample
-                D4[i]     = H0*signal[j] + H1*signal[j+1] + H2*signal[j+2] + H3*signal[j+3];
-                // cdf44[mid+i] is the corresponding wavelet for d4[i]
-                D4[mid+i] = G0*signal[j] + G1*signal[j+1] + G2*signal[j+2] + G3*signal[j+3];
-            }
-
-            // cdf44[i] is a scaled sample with a mirror wrap-up
-            D4[i]     = H0*signal[signal_length-2] + H1*signal[signal_length-1] + H2*signal[0] + H3*signal[1];
-            // cdf44[mid+i] is the corresponding wavelet for d4[i]
-            D4[mid+i] = G0*signal[signal_length-2] + G1*signal[signal_length-1] + G2*signal[0] + G3*signal[1];
-            
-            if ( dbg_flag ) {
-                final String cursig = "s^{" + currScale + "}_{" + numScalesToDo + "}";
-                final String prvsig = "s^{" + (currScale-1) + "}_{" + (numScalesToDo+1) + "}";
-                System.out.println("FWD SCL:  " + cursig + "[" + i + "]=" + "H0*" + prvsig + "[" + (signal_length-2) + "]+H1*" + prvsig + "[" + (signal_length-1) + "]+" +
-                       "H2*" + prvsig + "[" + 0 + "]+" + "H3*" + prvsig + "[" + 1 + "]; " );
-                System.out.println("FWD WVL:  " + cursig + "[" + (mid+i) + "]=" + "G0*" + prvsig + "[" + (signal_length-2) + "]+" + "G1*" + prvsig + "[" + (signal_length-1) + "]+" +
-                       "G2*" + prvsig + "[" + 0 + "]+" + "G3*" + prvsig + "[" + 1 + "]" );
-            }
-            
-            System.arraycopy(D4, 0, signal, 0, D4.length);
-            D4 = null;
-            signal_length >>= 1; // signal_length gets halved at each iteration/scale
-            
-            currScale     += 1;
-            numScalesToDo -= 1;
-            if ( currScale >= num_iters ) return;
-        }
+    static void fig_4_13_s06_d06_d07_d08_d09_D10_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-09-D10, p. 33", D10_START_1024, D10_END_1024);
     }
     
-    
-    // ordered inverse DWT; set dbg_flag to false if debugging messages are not
-    // needed
-    public static void orderedInverseDWT(double[] signal_transform, boolean dbg_flag) {
-        final int N = signal_transform.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) {
-            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
-            return;
-        } 
-          
-        int numInvScalesToDo = Utils.powVal(N)-1; 
-        int currInvScale     = 0;
-        int transform_length = 4;
-        
-        if ( dbg_flag ) { 
-            System.out.print("<=INPUT: "); Utils.displaySample(signal_transform);
-        }
-        
-        while ( transform_length <= N ) {
-            int mid = transform_length >> 1;
-            if ( dbg_flag ) System.out.println("MID              = " + mid);
-            if ( dbg_flag ) System.out.println("transform_length = " + transform_length);
-            
-            double[] inv_sig = new double[transform_length]; // restored values
-            
-            String cur_sig = null;
-            String prv_sig = null;
-            
-            if ( dbg_flag ) {
-                cur_sig = "s^{" + (numInvScalesToDo-1) + "}_{"  + (currInvScale+1) + "}";
-                prv_sig = "s^{" + numInvScalesToDo     + "}_{"  + currInvScale     + "}";
-            }
-            
-            inv_sig[0] = IH0*signal_transform[mid-1] + IH1*signal_transform[transform_length-1] + IH2*signal_transform[0] + IH3*signal_transform[mid];
-            inv_sig[1] = IG0*signal_transform[mid-1] + IG1*signal_transform[transform_length-1] + IG2*signal_transform[0] + IG3*signal_transform[mid];
-            
-            if ( dbg_flag ) {
-                System.out.println("INV SCL: " + cur_sig + "[" + 0 + "] = " + "IH0*" +  prv_sig + "[" + (mid-1) + "] + " +
-                        "IH1*" +  prv_sig + "[" + (transform_length-1) + "] + " + "IH2*" + prv_sig + "[0] + " + "IH3*" + prv_sig + "[" + mid + "]");
-                System.out.println("INV WVL: " + cur_sig + "[" + 1 + "] = " + "IG0*" + prv_sig + "[" + (mid-1) + "] + " +
-                        "IG1*" + prv_sig +  "[" + (transform_length-1) + "] + " + "IG2*" + prv_sig + "[0] + " + "IG3*" + prv_sig + "[" + mid + "]");
-            }
-            
-            
-            int i = 0, j = 2;
-            
-            while ( i < mid-1 ) {
-                if ( dbg_flag ) {
-                    cur_sig = "s^{" + (numInvScalesToDo-1) + "}_{" + (currInvScale+1) + "}";
-                    prv_sig = "s^{" + numInvScalesToDo     + "}_{" + currInvScale     + "}";
-                }
-                
-                if ( dbg_flag ) {
-                    System.out.println("INV SCL: " + cur_sig + "[" + j + "] = " + "IH0*" + prv_sig + "[" + i + "] + " +
-                        "IH1*" + prv_sig + "[" + (mid+i) + "] + " + "IH2*" + prv_sig + "[" + (i+1) + "] + " + 
-                        "IH3*" + prv_sig + "[" + (mid+i+1) + "]");
-                }
-                
-                //           scalers                     wavelets                       
-                inv_sig[j] = IH0*signal_transform[i]   + IH1*signal_transform[mid+i] + 
-                         IH2*signal_transform[i+1] + IH3*signal_transform[mid+i+1];
-                
-                if ( dbg_flag ) {
-                    System.out.println("INV WVL: " + cur_sig + "[" + (j+1) + "] = " + "IG0*" + prv_sig + "[" + i + "] + " +
-                        "IG1*" + prv_sig + "[" + (mid+i) + "] + " + "IG2*" + prv_sig + "[" + (i+1) + "] + " + 
-                        "IG3*" + prv_sig + "[" + (mid+i+1) + "]");
-                }
-                
-                //             scalers                     wavelets
-                inv_sig[j+1] = IG0*signal_transform[i]   + IG1*signal_transform[mid+i] + 
-                               IG2*signal_transform[i+1] + IG3*signal_transform[mid+i+1];
-                
-                i += 1; j += 2;
-            }
-            
-            currInvScale     += 1;
-            numInvScalesToDo -= 1;
-            
-            System.arraycopy(inv_sig, 0, signal_transform, 0, inv_sig.length);
-            transform_length <<= 1; // multiply by 2
-        }
+    static void fig_4_13_s06_d06_d07_d08_D9_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-D9-010, p. 33", D9_START_1024, D9_END_1024);
     }
     
-    public static void orderedInverseDWTForNumIters(double[] signal_transform, int num_iters, boolean dbg_flag) {
-        final int N = signal_transform.length;
-        if ( N < 4 || !Utils.isPowerOf2(N) ) {
-            System.out.println("No DWT will be done: signal's length is < 4 or not a power of 2");
-            return;
-        }  
-        
-        if ( dbg_flag ) { 
-            System.out.print("<=INPUT: "); Utils.displaySample(signal_transform);
-        }
-        
-        int numInvScalesToDo = Utils.powVal(N)-1; 
-        int currInvScale     = 0;
-        int transform_length = N / (1 << (num_iters-1));
-        
-        while ( transform_length <= N ) {
-            if ( currInvScale >= num_iters ) return;
-            
-            int mid = transform_length >> 1;
-            if ( dbg_flag ) System.out.println("MID              = " + mid);
-            if ( dbg_flag ) System.out.println("transform_length = " + transform_length);
-            if ( dbg_flag ) System.out.println("currInvScale     = " + currInvScale);
-            if ( dbg_flag ) System.out.println("num_iters        = " + num_iters);
-            
-            double[] inv_sig = new double[transform_length]; // restored values
-            
-            String cur_sig = null;
-            String prv_sig = null;
-            
-            if ( dbg_flag ) {
-                cur_sig = "s^{" + (numInvScalesToDo-1) + "}_{"  + (currInvScale+1) + "}";
-                prv_sig = "s^{" + numInvScalesToDo     + "}_{"  + currInvScale     + "}";
-            }
-            
-            inv_sig[0] = IH0*signal_transform[mid-1] + IH1*signal_transform[transform_length-1] + IH2*signal_transform[0] + IH3*signal_transform[mid];
-            inv_sig[1] = IG0*signal_transform[mid-1] + IG1*signal_transform[transform_length-1] + IG2*signal_transform[0] + IG3*signal_transform[mid];
-            
-            if ( dbg_flag ) {
-                System.out.println("INV SCL: " + cur_sig + "[" + 0 + "] = " + "IH0*" +  prv_sig + "[" + (mid-1) + "] + " +
-                        "IH1*" +  prv_sig + "[" + (transform_length-1) + "] + " + "IH2*" + prv_sig + "[0] + " + "IH3*" + prv_sig + "[" + mid + "]");
-                System.out.println("INV WVL: " + cur_sig + "[" + 1 + "] = " + "IG0*" + prv_sig + "[" + (mid-1) + "] + " +
-                        "IG1*" + prv_sig +  "[" + (transform_length-1) + "] + " + "IG2*" + prv_sig + "[0] + " + "IG3*" + prv_sig + "[" + mid + "]");
-            }
-            
-            
-            int i = 0, j = 2;
-            
-            while ( i < mid-1 ) {
-                if ( dbg_flag ) {
-                    cur_sig = "s^{" + (numInvScalesToDo-1) + "}_{" + (currInvScale+1) + "}";
-                    prv_sig = "s^{" + numInvScalesToDo     + "}_{" + currInvScale     + "}";
-                }
-                
-                if ( dbg_flag ) {
-                    System.out.println("INV SCL: " + cur_sig + "[" + j + "] = " + "IH0*" + prv_sig + "[" + i + "] + " +
-                        "IH1*" + prv_sig + "[" + (mid+i) + "] + " + "IH2*" + prv_sig + "[" + (i+1) + "] + " + 
-                        "IH3*" + prv_sig + "[" + (mid+i+1) + "]");
-                }
-                
-                //           scalers                     wavelets                       
-                inv_sig[j] = IH0*signal_transform[i]   + IH1*signal_transform[mid+i] + 
-                             IH2*signal_transform[i+1] + IH3*signal_transform[mid+i+1];
-                
-                if ( dbg_flag ) {
-                    System.out.println("INV WVL: " + cur_sig + "[" + (j+1) + "] = " + "IG0*" + prv_sig + "[" + i + "] + " +
-                        "IG1*" + prv_sig + "[" + (mid+i) + "] + " + "IG2*" + prv_sig + "[" + (i+1) + "] + " + 
-                        "IG3*" + prv_sig + "[" + (mid+i+1) + "]");
-                }
-                
-                //             scalers                     wavelets
-                inv_sig[j+1] = IG0*signal_transform[i]   + IG1*signal_transform[mid+i] + 
-                               IG2*signal_transform[i+1] + IG3*signal_transform[mid+i+1];
-                
-                i += 1; j += 2;
-            }
-            
-            currInvScale     += 1;
-            numInvScalesToDo -= 1;
-            
-            System.arraycopy(inv_sig, 0, signal_transform, 0, inv_sig.length);
-            transform_length <<= 1; // multiply by 2
-        }
+    static void fig_4_13_s06_d06_d07_D8_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-D8-09-010, p. 33", D8_START_1024, D8_END_1024);
     }
     
-    public static void test_fwd_cdf44(double[] s, boolean dbg_flag) {
-        double[] scopy = new double[s.length];
-        System.arraycopy(s, 0, scopy, 0, s.length);
-        System.out.print("Input: "); Utils.displaySample(scopy);
-        CDF44.orderedDWT(s, dbg_flag);
-        System.out.print("FWD CDF(4,4): "); Utils.displaySample(s);
-        System.out.println();
+    static void fig_4_13_s06_d06_D7_d08_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-D7-08-09-010, p. 33", D7_START_1024, D7_END_1024);
     }
     
-    public static void test_fwd_inv_cdf44(double[] s, boolean dbg_flag) {
-        System.out.print("Input: "); Utils.displaySample(s);
-        
-        CDF44.orderedDWT(s, dbg_flag);
-        
-        System.out.print("FWD CDF(4,4): "); Utils.displaySample(s);
-        System.out.println();
-        
-        CDF44.orderedInverseDWT(s, dbg_flag);
-        
-        System.out.print("INV CDF(4,4): "); Utils.displaySample(s);
-        System.out.println();
+    static void fig_4_13_s06_D6_d07_d08_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-D6-07-08-09-010, p. 33", D6_START_1024, D6_END_1024);
     }
     
-    public static void test_fwd_inv_cdf44_for_num_iters(double[] s, int num_iters, boolean dbg_flag) {
-        System.out.print("Input: "); Utils.displaySample(s);
-        double[] scopy = new double[s.length];
-        System.arraycopy(s, 0, scopy, 0, scopy.length);
-        
-        CDF44.orderedDWTForNumIters(s, num_iters, dbg_flag);
+    static void fig_4_13_S6_d06_d07_d08_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, S6-06-07-08-09-010, p. 33", S6_START_1024, S6_END_1024);
+    }
        
-        System.out.print("FWD CDF(4,4) for num iters " + num_iters + ": "); Utils.displaySample(s);
-        System.out.println();
-        
-        CDF44.orderedInverseDWTForNumIters(s, num_iters, dbg_flag);
-        
-        System.out.print("INV CDF(4,4) for num iters " + num_iters + ": "); Utils.displaySample(s);
-
-        if ( Utils.areSignalsEqual(s, scopy, 0.0001) ) {
-            System.out.println("CONVERSION TRUE");
+    static void display_signal_range(double[] signal, int range_start, int range_end) {
+        for(int i = range_start; i <= range_end; i++) {
+            System.out.println(signal[i]);
         }
-        else {
-            System.out.println("CONVERSION FALSE");
+    }
+    
+    static void display_signal_range_with_zeros(double[] signal, int range_start, int range_end) {
+        for(int i = 0; i < signal.length; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                System.out.println(signal[i]);
+            }
+            else {
+                System.out.println(0);
+            }
+        }
+    }
+    
+    static void display_signal(double[] signal) {
+        for(double d: signal) {
+            System.out.println(d);
+        }
+    }
+    
+    static void multires_fig_4_4_p28(String message, int range_start, int range_end) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
         }
         
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(signal, 3);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    // Fig. 4.4 on p. 28 in "Ripples in Mathematics."
+    static void fig_4_4_p28(SIGNAL signal) {
+        switch ( signal ) {
+            case D8: fig_4_4_s06_d06_d07_d8_p28(); break;
+            case D7: fig_4_4_s06_d06_d7_d08_p28(); break;
+            case D6: fig_4_4_s06_d6_d07_d08_p28(); break;
+            case S6: fig_4_4_s6_d06_d07_d08_p28(); break;
+        }
+    }
+    
+    static void fig_4_4_s06_d06_d07_d8_p28() {
+        multires_fig_4_4_p28("Fig. 4.4, 06-06-07-d8, p. 28", D8_START_512, D8_END_512);
+    }
+    
+    static void fig_4_4_s06_d06_d7_d08_p28() {
+        multires_fig_4_4_p28("Fig. 4.4, 06-06-d7-08, p. 28", D7_START_512, D7_END_512);
+    }
+    
+    static void fig_4_4_s06_d6_d07_d08_p28() {
+        multires_fig_4_4_p28("Fig. 4.4, 06-d6-07-08, p. 28", D6_START_512, D6_END_512);
+    }
+    
+    static void fig_4_4_s6_d06_d07_d08_p28() {
+        multires_fig_4_4_p28("Fig. 4.4, s6-06-07-08, p. 28", S6_START_512, S6_END_512);
+    }
+    
+    // prints the range values for the plot in Fig. 4.5, p.29
+    // in "Ripples in Mathematics."
+    static void fig_4_5_p29() {
+        
+        final int n = sRange.length;
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        double[] originalSignal = new double[n];
+        System.arraycopy(sRange, 0, originalSignal, 0, n);
+        
+        // original signal
+        System.out.println("ORIGINAL SIGNAL");
+        display_signal(sRange); 
+        System.out.println("=========================");
+        
+        // transformed signal after applying 3 iterations of 1D ordered HWT
+        System.out.println("TRANSFORMED SIGNAL");
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal(sRange);
+        System.out.println("=========================");
+        
+        // inverted signal
+        System.out.println("INVERTED SIGNAL");
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal(sRange);
+        System.out.println("=========================");
+        
+        // difference b/w the inverted and original signals
+        double[] signalDifference = new double[n];
+        for(int i = 0; i < n; i++) {
+            signalDifference[i] = sRange[i] - originalSignal[i];
+        }
+        
+        System.out.println("SIGNAL DIFFERENCE");
+        display_signal(signalDifference);
+    }
+    
+    // d8 range values for Fig. 4.6, p. 29 in "Ripples in Mathematics."
+    static void fig_4_6_d8_p29() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        sRange[200] = 2;
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal(sRange);
+    }
+    
+    // d7 range values for Fig. 4.6, p. 29 in "Ripples in Mathematics."
+    static void fig_4_6_d7_p29() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        sRange[200] = 2;
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, D7_START_512, D7_END_512);
+    }
+    
+    // d6 range values for Fig. 4.6, p. 29 in "Ripples in Mathematics."
+    static void fig_4_6_d6_p29() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        sRange[200] = 2;
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, D6_START_512, D6_END_512);
+    }
+    
+    // s6 range values for Fig. 4.6, p. 29 in "Ripples in Mathematics."
+    static void fig_4_6_s6_p29() {
+        
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+        
+        sRange[200] = 2;
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal_range(sRange, S6_START_512, S6_END_512);
+    }
+    
+    
+    // prints the range values for the plot in Fig. 4.6, p.29
+    // in "Ripples in Mathematics."
+    static void fig_4_6_p29(SIGNAL signal) {
+        switch ( signal ) {
+            case D8: 
+                fig_4_6_s06_d06_d07_d8_p29();
+                break;
+            case D7:
+                fig_4_6_s06_d06_d7_d08_p29();
+                break;
+            case D6:
+                fig_4_6_s06_d6_d07_d08_p29();
+                break;
+            case S6:
+                fig_4_6_s6_d06_d07_d08_p29();
+                break;
+        }
+    }
+    
+    static void fig_4_6_s06_d06_d07_d8_p29() {
+        multires_fig_4_6_p29("06-06-07-d8, Fig. 4.6, p. 29", D8_START_512, D8_END_512);
+    }
+    
+    static void fig_4_6_s06_d06_d7_d08_p29() {
+        multires_fig_4_6_p29("06-06-d7-08, Fig. 4.6, p. 29", D7_START_512, D7_END_512);
+    }
+    
+    static void fig_4_6_s06_d6_d07_d08_p29() {
+        multires_fig_4_6_p29("06-d6-07-08, Fig. 4.6, p. 29", D6_START_512, D6_END_512);
+    }
+    
+    static void fig_4_6_s6_d06_d07_d08_p29() {
+        multires_fig_4_6_p29("s6-06-07-08, Fig. 4.6, p. 29", S6_START_512, S6_END_512);
+    }
+    
+    static void multires_fig_4_6_p29(String message, int range_start, int range_end) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(signal, 3);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    public static void addNoiseToSignal(double[] signal) {
+        for(int i = 0; i < signal.length; i++) {
+            signal[i] += Math.random()/2.0;
+        }
+    }
+    
+    static void fig_4_7_p30() {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange); 
+        display_signal(sRange);
+    }
+    
+    static void multires_fig_4_8_p30(String message, int range_start, int range_end) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(signal, 3);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    // d8 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
+    static void fig_4_8_s06_d06_d07_d8_p30() {
+        multires_fig_4_8_p30("06-06-07-d8, Fig. 4.8, p. 30", D8_START_512, D8_END_512);
+    }
+    
+    // d7 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
+    static void fig_4_8_s06_d06_d7_d08_p30() {
+        multires_fig_4_8_p30("06-06-d7-08, Fig. 4.8, p. 30", D7_START_512, D7_END_512);
+    }
+    
+    // d6 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
+    static void fig_4_8_s06_d6_d07_d08_p30() {
+        multires_fig_4_8_p30("06-d6-07-08, Fig. 4.8, p. 30", D6_START_512, D6_END_512);
+    }
+    
+    // s6 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
+    static void fig_4_8_s6_d06_d07_d08_p30() {
+        multires_fig_4_8_p30("s6-06-07-08, Fig. 4.8, p. 30", S6_START_512, S6_END_512);
+    }
+    
+    static void fig_4_9_p31(double percent) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        System.out.println("=========================");
+        System.out.println("Signal with Noise:");
+        display_signal(sRange);
+        
+        OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
+        
+        //double percent = 20.0;
+        keep_top_N_percent(sRange, D8_START_512, D8_END_512, percent);
+        keep_top_N_percent(sRange, D7_START_512, D7_END_512, percent);
+        keep_top_N_percent(sRange, D6_START_512, D6_END_512, percent);
+        keep_top_N_percent(sRange, S6_START_512, S6_END_512, percent);
+        
+        System.out.println("=========================");
+        System.out.println("Processed Signal with Noise:");
+        display_signal(sRange);
+        System.out.println("=========================");
+        System.out.println("Inversed Signal with Noise:");
+        OneDHaar.orderedNormalizedFastInverseHaarWaveletTransformForNumIters(sRange, 3);
+        display_signal(sRange);
+        System.out.println("=========================");
+    }
+    
+    // =========================================================================
+    static void multires_fig_4_10_p32(String message, int range_start, int range_end) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        
+        CDF44.orderedDWTForNumIters(sRange, 3, false);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        System.out.println("inverse signal");
+        CDF44.orderedInverseDWTForNumIters(signal, 3, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void multires_fig_4_10_p32(String message, int range_start, int range_end, double top_n_percent) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        
+        CDF44.orderedDWTForNumIters(sRange, 3, false);
+        
+        double[] signal = new double[sRange.length];
+        for(int i = 0; i < 512; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRange[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        // keep only top_n percent of the computed coeffs in range
+        keep_top_N_percent(signal, range_start, range_end, top_n_percent);
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, 3, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void fig_4_11_p32_top_n(double percent) {
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = sRipples_F_p25.v(sDomain[i]);
+        }
+
+        sRange[200] = 2; // spike at 200
+        addNoiseToSignal(sRange);
+        System.out.println("=========================");
+        System.out.println("Signal with Noise:");
+        display_signal(sRange);
+        
+        CDF44.orderedDWTForNumIters(sRange, 3, false);
+        
+        keep_top_N_percent(sRange, D8_START_512, D8_END_512, percent);
+        keep_top_N_percent(sRange, D7_START_512, D7_END_512, percent);
+        keep_top_N_percent(sRange, D6_START_512, D6_END_512, percent);
+        keep_top_N_percent(sRange, S6_START_512, S6_END_512, percent);
+        
+        System.out.println("=========================");
+        System.out.println("Processed Signal with Noise:");
+        display_signal(sRange);
+        System.out.println("=========================");
+        System.out.println("Inversed Signal with Noise:");
+        CDF44.orderedInverseDWTForNumIters(sRange, 3, false);
+        display_signal(sRange);
+        System.out.println("=========================");
+    }
+    
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=10%
+    static void fig_4_11_top_10_p32() {
+        fig_4_11_p32_top_n(10.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=20%
+    static void fig_4_11_top_20_p32() {
+        fig_4_11_p32_top_n(20.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=30%
+    static void fig_4_11_top_30_p32() {
+        fig_4_11_p32_top_n(30.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=40%
+    static void fig_4_11_top_40_p32() {
+        fig_4_11_p32_top_n(40.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=50%
+    static void fig_4_11_top_50_p32() {
+        fig_4_11_p32_top_n(50.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=60%
+    static void fig_4_11_top_60_p32() {
+        fig_4_11_p32_top_n(60.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=70%
+    static void fig_4_11_top_70_p32() {
+        fig_4_11_p32_top_n(70.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=80%
+    static void fig_4_11_top_80_p32() {
+        fig_4_11_p32_top_n(80.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=90%
+    static void fig_4_11_top_90_p32() {
+        fig_4_11_p32_top_n(90.0);
+    }
+    
+    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=100%
+    static void fig_4_11_top_100_p32() {
+        fig_4_11_p32_top_n(100.0);
+    }
+    
+    // =============================
+
+    // d8 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s06_d06_d07_D8_p32() {
+        multires_fig_4_10_p32("06-06-07-D8, Fig. 4.10, p. 32", D8_START_512, D8_END_512);
+    }
+    
+    // d7 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s06_d06_D7_d08_p32() {
+        multires_fig_4_10_p32("06-06-D7-08, Fig. 4.10, p. 32", D7_START_512, D7_END_512);
+    }
+    
+    // d6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_s06_D6_d07_d08_p32() {
+        multires_fig_4_10_p32("06-D6-07-08, Fig. 4.10, p. 32", D6_START_512, D6_END_512);
+    }
+    
+    // s6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
+    static void fig_4_10_S6_d06_d07_d08_p32() {
+        multires_fig_4_10_p32("S6-06-07-08, Fig. 4.10, p. 32", S6_START_512, S6_END_512);
+    }
+
+    static void keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
+        if ( percent < 0.0 || percent > 100.0 ) throw new IllegalArgumentException("percent < 0 or > 100");
+        if ( percent == 100.0 ) return; // no need to do anything
+        
+        final int range_length = range_end - range_start + 1;
+        double[] sorted_range = new double[range_length];
+        // copy the signal segment into sorted_range
+        System.arraycopy(signal, range_start, sorted_range, 0, range_length);
+        Arrays.sort(sorted_range); // sort the range
+        final int percent_len = (int) (range_length * (percent/100.0));
+        final int sorted_range_min_index = Math.max(0, Math.min(range_length - percent_len, range_length - 1));
+        
+        if ( sorted_range_min_index > range_length - 1 ) {
+            System.out.println("range cannot be discretized");
+            return;
+        }
+        
+        /*
+        System.out.println("range_start            = " + range_start);
+        System.out.println("range_end              = " + range_end);
+        System.out.println("range_length           = " + range_length);
+        System.out.println("percent_length         = " + percent_len);
+        System.out.println("min_index              = " + sorted_range_min_index);
+        System.out.println("max_index              = " + (range_length - 1));
+        System.out.println("sorted_range_min       = " + sorted_range[sorted_range_min_index]);
+        System.out.println("sorted_range_max       = " + sorted_range[range_length-1]);
+        */
+                
+        final double sorted_range_min = Math.abs(sorted_range[sorted_range_min_index]);
+        // set all values in signal less than the abs(sorted_range_min) to 0.0
+        for(int i = range_start; i < range_end; i++) {
+            if ( Math.abs(signal[i]) < sorted_range_min ) {
+                signal[i] = 0.0;
+            }
+        }
+    }
+    
+    // Define a function that takes an array, start, end, percent
+    // copy array[start, end]
+    // sort the array
+    // compute the start and end index
+    // range_min = sorted_array[start]
+    // range_max = sorted_array[end]
+    // go through array[start, end] and step all indices outslide of [range_min, range_max]
+    // to 0.
+    
+    
+    // 10% coefficients.
+    // Given an array, sort it, then take the top percent
+    public static void topNPercent(double[] ary, double percent) {
+        for(int i = 0; i < ary.length; i++) { System.out.print(ary[i] + " "); }
         System.out.println();
+        Arrays.sort(ary);
+        for(int i = 0; i < ary.length; i++) { System.out.print(ary[i] + " "); }
+        System.out.println();
+        int len = (int) (ary.length * (percent/100.0));
+        System.out.println(len);
+        int end = ary.length - 1;
+        int start = Math.max(0, end - len + 1);
+        System.out.println("start = " + start + " end = " + end); 
     }
-     
-    static double[] a01a = {1, 2, 3, 4};
-    static double[] a01b = {4, 3, 2, 1};
-    static double[] a02a = {1, 2, 3, 4, 5, 6, 7, 8};
-    static double[] a02b = {8, 7, 6, 5, 4, 3, 2, 1};
     
-    static double[] a03a = {1, 1, 1, 1};
-    static double[] a03b = {2, 2, 2, 2};
-    static double[] a03c = {3, 3, 3, 3};
-    static double[] a03d = {4, 4, 4, 4};
-    
-    static double[] a04a = {1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16};
-    static double[] a04b = {16, 15, 14, 13, 12, 11, 10, 9,  8, 7,  6,  5,  4,  3,  2,  1};
-    
-
-    public static void main(String[] args) { 
-        test_fwd_inv_cdf44(a02a, false);
-        test_fwd_inv_cdf44(a02b, false);
+    static void testTopNPercent() {
+        double[] a1 = {20, 1, 17, 11, 2, 8, 10, 4, 9, 19};
+        
+        topNPercent(a1, 100.0);
+        Utils.displaySample(a1);
+        keep_top_N_percent(a1, 0, 9, 100.0);
+        Utils.displaySample(a1);
     }
-
+    
+    public static void main(String[] args) {
+        //fig_4_11_top_100_p32();
+        //testTopNPercent();
+        //fig_4_12_p33();
+        //fig_4_12_s06_d06_d07_d08_d09_D10_p33();
+        //fig_4_12_s06_d06_d07_d08_D9_d010_p33();
+        //fig_4_12_s06_d06_d07_D8_d09_d010_p33();
+        //fig_4_12_s06_d06_D7_d08_d09_d010_p33();
+        //fig_4_12_s06_D6_d07_d08_d09_d010_p33();
+        fig_4_13_S6_d06_d07_d08_d09_d010_p34();
+    }
 }
