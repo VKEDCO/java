@@ -3,6 +3,7 @@ package org.vkedco.wavelets.tests;
 import java.util.Arrays;
 import org.vkedco.calc.utils.Partition;
 import org.vkedco.calc.utils.Ripples_F_p25;
+import org.vkedco.calc.utils.Ripples_F_p33;
 import org.vkedco.wavelets.haar.OneDHaar;
 import org.vkedco.wavelets.ripples.CDF44;
 import org.vkedco.wavelets.utils.Utils;
@@ -16,22 +17,44 @@ import org.vkedco.wavelets.utils.Utils;
  * @author Vladimir Kulyukin
  *****************************************************************
  */
+
 public class RipplesInMathCh04 {
     
-    public enum SIGNAL { D8, D7, D6, S6 };
+    public enum SIGNAL { D10, D9, D8, D7, D6, S6 };
     
     static double[] sDomain = Partition.partition(0, 511, 1);
+    static double[] sDomainFig_4_12_p33 = Partition.partition(0.0, 1.0, 1.0/1024.0);
+    static double[] sRangeFig_4_12_p33 = new double[1024];
     static double[] sRange  = new double[512];
     static Ripples_F_p25 sRipples_F_p25 = new Ripples_F_p25();
+    static Ripples_F_p33 sRipples_F_p33 = new Ripples_F_p33();
     
-    static final int D8_START   = 256; 
-    static final int D8_END     = 511;
-    static final int D7_START   = 128; 
-    static final int D7_END     = 255;
-    static final int D6_START   = 64; 
-    static final int D6_END     = 127;
-    static final int S6_START   = 0;   
-    static final int S6_END     = 63;
+    static final int D10_START_1024  = 512;
+    static final int D10_END_1024    = 1023;
+    
+    static final int D9_START_1024   = 256;
+    static final int D9_END_1024     = 511;
+    
+    static final int D8_START_1024   = 128;
+    static final int D8_END_1024     = 255;
+    
+    static final int D7_START_1024   = 64;
+    static final int D7_END_1024     = 127;
+    
+    static final int D6_START_1024   = 32;
+    static final int D6_END_1024     = 63;
+    
+    static final int S6_START_1024   = 0;
+    static final int S6_END_1024     = 31;
+    
+    static final int D8_START_512   = 256; 
+    static final int D8_END_512     = 511;
+    static final int D7_START_512   = 128; 
+    static final int D7_END_512     = 255;
+    static final int D6_START_512   = 64; 
+    static final int D6_END_512     = 127;
+    static final int S6_START_512   = 0;   
+    static final int S6_END_512     = 63;
     
     // prints the range values for the plot in Fig. 4.1, p. 26
     // in "Ripples in Mathematics."
@@ -66,7 +89,7 @@ public class RipplesInMathCh04 {
         }
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, D8_START, D8_END);
+        display_signal_range(sRange, D8_START_512, D8_END_512);
     }
     
     // d7 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
@@ -77,7 +100,7 @@ public class RipplesInMathCh04 {
         }
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, D7_START, D7_END);
+        display_signal_range(sRange, D7_START_512, D7_END_512);
     }
     
     // d6 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
@@ -88,7 +111,7 @@ public class RipplesInMathCh04 {
         }
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, D6_START, D6_END);
+        display_signal_range(sRange, D6_START_512, D6_END_512);
     }
     
     // s6 range values for Fig. 4.3, p. 27 in "Ripples in Mathematics."
@@ -99,9 +122,117 @@ public class RipplesInMathCh04 {
         }
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, S6_START, S6_END);
+        display_signal_range(sRange, S6_START_512, S6_END_512);
     }
+    
+    static void fig_4_12_p33() {
         
+        for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
+        
+        //CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        display_signal(sRangeFig_4_12_p33);
+    }
+    
+    static void multires_fig_4_13_p34(String message, int range_start, int range_end) {
+        for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
+
+        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        double[] signal = new double[sRangeFig_4_12_p33.length];
+        for(int i = 0; i < 1024; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRangeFig_4_12_p33[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, 6, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void fig_4_13_s06_d06_d07_d08_d09_D10_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-09-D10, p. 33", D10_START_1024, D10_END_1024);
+    }
+    
+    static void fig_4_13_s06_d06_d07_d08_D9_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-D9-010, p. 33", D9_START_1024, D9_END_1024);
+    }
+    
+    static void fig_4_13_s06_d06_d07_D8_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-D8-09-010, p. 33", D8_START_1024, D8_END_1024);
+    }
+    
+    static void fig_4_13_s06_d06_D7_d08_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-06-D7-08-09-010, p. 33", D7_START_1024, D7_END_1024);
+    }
+    
+    static void fig_4_13_s06_D6_d07_d08_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, 06-D6-07-08-09-010, p. 33", D6_START_1024, D6_END_1024);
+    }
+    
+    static void fig_4_13_S6_d06_d07_d08_d09_d010_p34() {
+        multires_fig_4_13_p34("Fig. 4.13, S6-06-07-08-09-010, p. 33", S6_START_1024, S6_END_1024);
+    }
+    
+    // 1) Given a signal, apply several forward scales to it.
+    // 2) Inverse the signal on S.
+    // 3) Subtract the inversed signal from the original signal to
+    //    remove the slow variations.
+    static void fig_4_15_p35() {
+       for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
+        
+        double[] sRangeFig_4_12_p33_original = new double[sRangeFig_4_12_p33.length];
+        System.arraycopy(sRangeFig_4_12_p33, 0, sRangeFig_4_12_p33_original, 0, sRangeFig_4_12_p33.length);
+
+        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        double[] signal = new double[sRangeFig_4_12_p33.length];
+        for(int i = 0; i < 1024; i++) {
+            if ( i >= S6_START_1024 && i <= S6_END_1024 ) {
+                signal[i] = sRangeFig_4_12_p33[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        CDF44.orderedInverseDWTForNumIters(signal, 6, false);
+        
+        for(int i = 0; i < sRangeFig_4_12_p33_original.length; i++) {
+            sRangeFig_4_12_p33_original[i] -= signal[i];
+        }
+        
+        display_signal(sRangeFig_4_12_p33_original);
+        System.out.println("=========================");
+    }
+       
     static void display_signal_range(double[] signal, int range_start, int range_end) {
         for(int i = range_start; i <= range_end; i++) {
             System.out.println(signal[i]);
@@ -162,19 +293,19 @@ public class RipplesInMathCh04 {
     }
     
     static void fig_4_4_s06_d06_d07_d8_p28() {
-        multires_fig_4_4_p28("Fig. 4.4, 06-06-07-d8, p. 28", D8_START, D8_END);
+        multires_fig_4_4_p28("Fig. 4.4, 06-06-07-d8, p. 28", D8_START_512, D8_END_512);
     }
     
     static void fig_4_4_s06_d06_d7_d08_p28() {
-        multires_fig_4_4_p28("Fig. 4.4, 06-06-d7-08, p. 28", D7_START, D7_END);
+        multires_fig_4_4_p28("Fig. 4.4, 06-06-d7-08, p. 28", D7_START_512, D7_END_512);
     }
     
     static void fig_4_4_s06_d6_d07_d08_p28() {
-        multires_fig_4_4_p28("Fig. 4.4, 06-d6-07-08, p. 28", D6_START, D6_END);
+        multires_fig_4_4_p28("Fig. 4.4, 06-d6-07-08, p. 28", D6_START_512, D6_END_512);
     }
     
     static void fig_4_4_s6_d06_d07_d08_p28() {
-        multires_fig_4_4_p28("Fig. 4.4, s6-06-07-08, p. 28", S6_START, S6_END);
+        multires_fig_4_4_p28("Fig. 4.4, s6-06-07-08, p. 28", S6_START_512, S6_END_512);
     }
     
     // prints the range values for the plot in Fig. 4.5, p.29
@@ -238,7 +369,7 @@ public class RipplesInMathCh04 {
         sRange[200] = 2;
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, D7_START, D7_END);
+        display_signal_range(sRange, D7_START_512, D7_END_512);
     }
     
     // d6 range values for Fig. 4.6, p. 29 in "Ripples in Mathematics."
@@ -251,7 +382,7 @@ public class RipplesInMathCh04 {
         sRange[200] = 2;
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, D6_START, D6_END);
+        display_signal_range(sRange, D6_START_512, D6_END_512);
     }
     
     // s6 range values for Fig. 4.6, p. 29 in "Ripples in Mathematics."
@@ -264,7 +395,7 @@ public class RipplesInMathCh04 {
         sRange[200] = 2;
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
-        display_signal_range(sRange, S6_START, S6_END);
+        display_signal_range(sRange, S6_START_512, S6_END_512);
     }
     
     
@@ -288,19 +419,19 @@ public class RipplesInMathCh04 {
     }
     
     static void fig_4_6_s06_d06_d07_d8_p29() {
-        multires_fig_4_6_p29("06-06-07-d8, Fig. 4.6, p. 29", D8_START, D8_END);
+        multires_fig_4_6_p29("06-06-07-d8, Fig. 4.6, p. 29", D8_START_512, D8_END_512);
     }
     
     static void fig_4_6_s06_d06_d7_d08_p29() {
-        multires_fig_4_6_p29("06-06-d7-08, Fig. 4.6, p. 29", D7_START, D7_END);
+        multires_fig_4_6_p29("06-06-d7-08, Fig. 4.6, p. 29", D7_START_512, D7_END_512);
     }
     
     static void fig_4_6_s06_d6_d07_d08_p29() {
-        multires_fig_4_6_p29("06-d6-07-08, Fig. 4.6, p. 29", D6_START, D6_END);
+        multires_fig_4_6_p29("06-d6-07-08, Fig. 4.6, p. 29", D6_START_512, D6_END_512);
     }
     
     static void fig_4_6_s6_d06_d07_d08_p29() {
-        multires_fig_4_6_p29("s6-06-07-08, Fig. 4.6, p. 29", S6_START, S6_END);
+        multires_fig_4_6_p29("s6-06-07-08, Fig. 4.6, p. 29", S6_START_512, S6_END_512);
     }
     
     static void multires_fig_4_6_p29(String message, int range_start, int range_end) {
@@ -378,22 +509,22 @@ public class RipplesInMathCh04 {
     
     // d8 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
     static void fig_4_8_s06_d06_d07_d8_p30() {
-        multires_fig_4_8_p30("06-06-07-d8, Fig. 4.8, p. 30", D8_START, D8_END);
+        multires_fig_4_8_p30("06-06-07-d8, Fig. 4.8, p. 30", D8_START_512, D8_END_512);
     }
     
     // d7 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
     static void fig_4_8_s06_d06_d7_d08_p30() {
-        multires_fig_4_8_p30("06-06-d7-08, Fig. 4.8, p. 30", D7_START, D7_END);
+        multires_fig_4_8_p30("06-06-d7-08, Fig. 4.8, p. 30", D7_START_512, D7_END_512);
     }
     
     // d6 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
     static void fig_4_8_s06_d6_d07_d08_p30() {
-        multires_fig_4_8_p30("06-d6-07-08, Fig. 4.8, p. 30", D6_START, D6_END);
+        multires_fig_4_8_p30("06-d6-07-08, Fig. 4.8, p. 30", D6_START_512, D6_END_512);
     }
     
     // s6 range values for Fig. 4.8, p. 30 in "Ripples in Mathematics."
     static void fig_4_8_s6_d06_d07_d08_p30() {
-        multires_fig_4_8_p30("s6-06-07-08, Fig. 4.8, p. 30", S6_START, S6_END);
+        multires_fig_4_8_p30("s6-06-07-08, Fig. 4.8, p. 30", S6_START_512, S6_END_512);
     }
     
     static void fig_4_9_p31(double percent) {
@@ -410,10 +541,10 @@ public class RipplesInMathCh04 {
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
         
         //double percent = 20.0;
-        keep_top_N_percent(sRange, D8_START, D8_END, percent);
-        keep_top_N_percent(sRange, D7_START, D7_END, percent);
-        keep_top_N_percent(sRange, D6_START, D6_END, percent);
-        keep_top_N_percent(sRange, S6_START, S6_END, percent);
+        keep_top_N_percent(sRange, D8_START_512, D8_END_512, percent);
+        keep_top_N_percent(sRange, D7_START_512, D7_END_512, percent);
+        keep_top_N_percent(sRange, D6_START_512, D6_END_512, percent);
+        keep_top_N_percent(sRange, S6_START_512, S6_END_512, percent);
         
         System.out.println("=========================");
         System.out.println("Processed Signal with Noise:");
@@ -501,10 +632,10 @@ public class RipplesInMathCh04 {
         
         CDF44.orderedDWTForNumIters(sRange, 3, false);
         
-        keep_top_N_percent(sRange, D8_START, D8_END, percent);
-        keep_top_N_percent(sRange, D7_START, D7_END, percent);
-        keep_top_N_percent(sRange, D6_START, D6_END, percent);
-        keep_top_N_percent(sRange, S6_START, S6_END, percent);
+        keep_top_N_percent(sRange, D8_START_512, D8_END_512, percent);
+        keep_top_N_percent(sRange, D7_START_512, D7_END_512, percent);
+        keep_top_N_percent(sRange, D6_START_512, D6_END_512, percent);
+        keep_top_N_percent(sRange, S6_START_512, S6_END_512, percent);
         
         System.out.println("=========================");
         System.out.println("Processed Signal with Noise:");
@@ -571,26 +702,26 @@ public class RipplesInMathCh04 {
 
     // d8 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_s06_d06_d07_D8_p32() {
-        multires_fig_4_10_p32("06-06-07-D8, Fig. 4.10, p. 32", D8_START, D8_END);
+        multires_fig_4_10_p32("06-06-07-D8, Fig. 4.10, p. 32", D8_START_512, D8_END_512);
     }
     
     // d7 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_s06_d06_D7_d08_p32() {
-        multires_fig_4_10_p32("06-06-D7-08, Fig. 4.10, p. 32", D7_START, D7_END);
+        multires_fig_4_10_p32("06-06-D7-08, Fig. 4.10, p. 32", D7_START_512, D7_END_512);
     }
     
     // d6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_s06_D6_d07_d08_p32() {
-        multires_fig_4_10_p32("06-D6-07-08, Fig. 4.10, p. 32", D6_START, D6_END);
+        multires_fig_4_10_p32("06-D6-07-08, Fig. 4.10, p. 32", D6_START_512, D6_END_512);
     }
     
     // s6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_S6_d06_d07_d08_p32() {
-        multires_fig_4_10_p32("S6-06-07-08, Fig. 4.10, p. 32", S6_START, S6_END);
+        multires_fig_4_10_p32("S6-06-07-08, Fig. 4.10, p. 32", S6_START_512, S6_END_512);
     }
 
     static void keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
-        if ( percent < 0.0 || percent > 100.0 ) return;
+        if ( percent < 0.0 || percent > 100.0 ) throw new IllegalArgumentException("percent < 0 or > 100");
         if ( percent == 100.0 ) return; // no need to do anything
         
         final int range_length = range_end - range_start + 1;
@@ -618,7 +749,7 @@ public class RipplesInMathCh04 {
         */
                 
         final double sorted_range_min = Math.abs(sorted_range[sorted_range_min_index]);
-        // set all values in signal less than the sorted_range_min to 0.0
+        // set all values in signal less than the abs(sorted_range_min) to 0.0
         for(int i = range_start; i < range_end; i++) {
             if ( Math.abs(signal[i]) < sorted_range_min ) {
                 signal[i] = 0.0;
@@ -660,8 +791,19 @@ public class RipplesInMathCh04 {
         Utils.displaySample(a1);
     }
     
+    // ex 4.3, p. 33
+    // apply chirp to a signal of 512
+    // apply chirp to a signal of 1024
     public static void main(String[] args) {
-        fig_4_11_top_100_p32();
+        //fig_4_11_top_100_p32();
         //testTopNPercent();
+        //fig_4_12_p33();
+        //fig_4_12_s06_d06_d07_d08_d09_D10_p33();
+        //fig_4_12_s06_d06_d07_d08_D9_d010_p33();
+        //fig_4_12_s06_d06_d07_D8_d09_d010_p33();
+        //fig_4_12_s06_d06_D7_d08_d09_d010_p33();
+        //fig_4_12_s06_D6_d07_d08_d09_d010_p33();
+        //fig_4_13_S6_d06_d07_d08_d09_d010_p34();
+        fig_4_15_p35();
     }
 }
