@@ -4,6 +4,7 @@ import java.util.Arrays;
 import org.vkedco.calc.utils.Partition;
 import org.vkedco.calc.utils.Ripples_F_p25;
 import org.vkedco.calc.utils.Ripples_F_p33;
+import org.vkedco.calc.utils.Ripples_F_ex_4_3_p33;
 import org.vkedco.wavelets.haar.OneDHaar;
 import org.vkedco.wavelets.ripples.CDF44;
 import org.vkedco.wavelets.utils.Utils;
@@ -55,6 +56,11 @@ public class RipplesInMathCh04 {
     static final int D6_END_512     = 127;
     static final int S6_START_512   = 0;   
     static final int S6_END_512     = 63;
+    
+    static final int D5_START_512   = 32;
+    static final int D5_END_512     = 63;
+    static final int S5_START_512   = 0;
+    static final int S5_END_512     = 31;
     
     // prints the range values for the plot in Fig. 4.1, p. 26
     // in "Ripples in Mathematics."
@@ -199,6 +205,8 @@ public class RipplesInMathCh04 {
     // 2) Inverse the signal on S.
     // 3) Subtract the inversed signal from the original signal to
     //    remove the slow variations.
+    // 4) what happens if we subtract the original signal from the inversed signal?
+    //    the fast variations become negative.
     static void fig_4_15_p35() {
        for(int i = 0; i < 1024; i++)  {
             sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
@@ -230,6 +238,40 @@ public class RipplesInMathCh04 {
         }
         
         display_signal(sRangeFig_4_12_p33_original);
+        System.out.println("=========================");
+    }
+    
+    static void fig_4_15a_p35() {
+       for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
+        
+        double[] sRangeFig_4_12_p33_original = new double[sRangeFig_4_12_p33.length];
+        System.arraycopy(sRangeFig_4_12_p33, 0, sRangeFig_4_12_p33_original, 0, sRangeFig_4_12_p33.length);
+
+        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        double[] signal = new double[sRangeFig_4_12_p33.length];
+        for(int i = 0; i < 1024; i++) {
+            if ( i >= S6_START_1024 && i <= S6_END_1024 ) {
+                signal[i] = sRangeFig_4_12_p33[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        CDF44.orderedInverseDWTForNumIters(signal, 6, false);
+        
+        for(int i = 0; i < sRangeFig_4_12_p33_original.length; i++) {
+            signal[i] -=  sRangeFig_4_12_p33_original[i];
+        }
+        
+        display_signal(signal);
         System.out.println("=========================");
     }
        
@@ -782,6 +824,34 @@ public class RipplesInMathCh04 {
         System.out.println("start = " + start + " end = " + end); 
     }
     
+    // this is for ex. 4.3, p. 33
+    static double[] generate_chirp(int len) {
+        double[] chirp_signal = new double[len];
+        
+        double[] chirp_domain = Partition.partition(0, len, 1);
+ 
+        Ripples_F_ex_4_3_p33 chirp = new Ripples_F_ex_4_3_p33();
+        for(int i = 0; i < len; i++) {
+            chirp_signal[i] = chirp.v(chirp_domain[i]);
+        }
+        
+        chirp_domain = null;
+        
+        return chirp_signal;
+    }
+    
+    static void display_chirp_512() {
+        double[] chirp_signal = generate_chirp(512);
+        display_signal(chirp_signal);
+        chirp_signal = null;
+    }
+    
+    static void display_chirp_1024() {
+        double[] chirp_signal = generate_chirp(1024);
+        display_signal(chirp_signal);
+        chirp_signal = null;
+    }
+    
     static void testTopNPercent() {
         double[] a1 = {20, 1, 17, 11, 2, 8, 10, 4, 9, 19};
         
@@ -791,19 +861,65 @@ public class RipplesInMathCh04 {
         Utils.displaySample(a1);
     }
     
+    static void multires_ex_4_3_cdf44_p33(String message, int range_start, int range_end, int signal_size, int num_scales) {
+        double[] chirp_signal = generate_chirp(signal_size);
+        
+        CDF44.orderedDWTForNumIters(chirp_signal, num_scales, false);
+        
+        double[] signal = new double[signal_size];
+        for(int i = 0; i < signal_size; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = chirp_signal[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, num_scales, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void ex_4_3_chirp_512_cdf44_d8_p33() {
+        multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, D8, p. 33", D8_START_512, D8_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_cdf44_d7_p33() {
+        multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, D7, p. 33", D7_START_512, D7_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_cdf44_d6_p33() {
+        multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, D6, p. 33", D6_START_512, D6_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_cdf44_s6_p33() {
+        multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, S6, p. 33", S6_START_512, S6_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_cdf44_d5_p33() {
+        multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, D5, p. 33", D5_START_512, D5_END_512, 512, 4);
+    }
+    
+    static void ex_4_3_chirp_512_cdf44_s5_p33() {
+        multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, S5, p. 33", S5_START_512, S5_END_512, 512, 4);
+    }
+    
     // ex 4.3, p. 33
     // apply chirp to a signal of 512
     // apply chirp to a signal of 1024
     public static void main(String[] args) {
-        //fig_4_11_top_100_p32();
-        //testTopNPercent();
-        //fig_4_12_p33();
-        //fig_4_12_s06_d06_d07_d08_d09_D10_p33();
-        //fig_4_12_s06_d06_d07_d08_D9_d010_p33();
-        //fig_4_12_s06_d06_d07_D8_d09_d010_p33();
-        //fig_4_12_s06_d06_D7_d08_d09_d010_p33();
-        //fig_4_12_s06_D6_d07_d08_d09_d010_p33();
-        //fig_4_13_S6_d06_d07_d08_d09_d010_p34();
-        fig_4_15_p35();
+        //display_chirp_512();
+        //ex_4_3_s06_d06_d07_d8_p33();
+        //ex_4_3_s06_d06_d7_d08_p33();
+        //ex_4_3_s06_d6_d07_d08_p33();
+        //ex_4_3_chirp_512_cdf44_s6_p33();
+        //ex_4_3_chirp_512_cdf44_s5_p33();
+        fig_4_15a_p35();
     }
 }
