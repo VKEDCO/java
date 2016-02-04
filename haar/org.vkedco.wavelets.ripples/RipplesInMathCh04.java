@@ -5,6 +5,7 @@ import org.vkedco.calc.utils.Partition;
 import org.vkedco.calc.utils.Ripples_F_p25;
 import org.vkedco.calc.utils.Ripples_F_p33;
 import org.vkedco.calc.utils.Ripples_F_ex_4_3_p33;
+import org.vkedco.calc.utils.Ripples_F_ex_4_4_p34;
 import org.vkedco.wavelets.haar.OneDHaar;
 import org.vkedco.wavelets.ripples.CDF44;
 import org.vkedco.wavelets.utils.Utils;
@@ -910,16 +911,114 @@ public class RipplesInMathCh04 {
         multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, S5, p. 33", S5_START_512, S5_END_512, 512, 4);
     }
     
-    // ex 4.3, p. 33
-    // apply chirp to a signal of 512
-    // apply chirp to a signal of 1024
+    // this is for ex. 4.4, p. 34, w/o noise
+    static double[] generate_signal_without_noise_ex_4_4_p34(int len) {
+        double[] signal = new double[len];
+        double[] signal_domain = Partition.partition(0.0, 1.0, 1.0/len);
+ 
+        Ripples_F_ex_4_4_p34 sf = new Ripples_F_ex_4_4_p34();
+        
+        for(int i = 0; i < len; i++) {
+            signal[i] = sf.v(signal_domain[i]);
+        }
+        
+        signal_domain = null;
+        
+        return signal;
+    }
+    
+    static double[] generate_signal_with_noise_ex_4_4_p34(int len, int x, double v) {
+        double[] signal = new double[len];
+        double[] signal_domain = Partition.partition(0.0, 1.0, 1.0/len);
+ 
+        Ripples_F_ex_4_4_p34 sf = new Ripples_F_ex_4_4_p34();
+        
+        for(int i = 0; i < len; i++) {
+            signal[i] = sf.v(signal_domain[i]);
+        }
+        
+        // add noise at x
+        signal[x] = v;
+        signal_domain = null;
+        
+        return signal;
+    }
+    
+    static void display_signal_without_noise_ex_4_4_p34_512() {
+        double[] signal = generate_signal_without_noise_ex_4_4_p34(512);
+        display_signal(signal);
+        signal = null;
+    }
+    
+    static void display_signal_without_noise_ex_4_4_p34_1024() {
+        double[] signal = generate_signal_without_noise_ex_4_4_p34(1024);
+        display_signal(signal);
+        signal = null;
+    }
+    
+    static void display_signal_with_noise_ex_4_4_p34_512() {
+        double[] signal = generate_signal_with_noise_ex_4_4_p34(512, 200, 4.0);
+        display_signal(signal);
+        signal = null;
+    }
+    
+    static void display_signal_with_noise_ex_4_4_p34_1024() {
+        double[] signal = generate_signal_with_noise_ex_4_4_p34(1024, 500, 4.0);
+        display_signal(signal);
+        signal = null;
+    }
+    
+    // ex 4.4, p. 34
+    static void multires_ex_4_4_cdf44_p34(String message, int range_start, int range_end, int signal_size, int num_scales) {
+        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 200, 4.0);
+        
+        CDF44.orderedDWTForNumIters(noisy_signal, num_scales, false);
+        
+        double[] signal = new double[signal_size];
+        for(int i = 0; i < signal_size; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = noisy_signal[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        CDF44.orderedInverseDWTForNumIters(signal, num_scales, false);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void ex_4_4_512_cdf44_d8_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D8, p. 34", D8_START_512, D8_END_512, 512, 3);
+    }
+    
+    static void ex_4_4_512_cdf44_d7_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D7, p. 34", D7_START_512, D7_END_512, 512, 3);
+    }
+    
+    static void ex_4_4_512_cdf44_d6_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D6, p. 34", D6_START_512, D6_END_512, 512, 3);
+    }
+    
+    static void ex_4_4_512_cdf44_s6_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, S6, p. 34", S6_START_512, S6_END_512, 512, 3);
+    }
+    
+    static void ex_4_4_512_cdf44_d5_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D5, p. 34", D5_START_512, D5_END_512, 512, 4);
+    }
+    
+    static void ex_4_4_512_cdf44_s5_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
+    }
+    
     public static void main(String[] args) {
-        //display_chirp_512();
-        //ex_4_3_s06_d06_d07_d8_p33();
-        //ex_4_3_s06_d06_d7_d08_p33();
-        //ex_4_3_s06_d6_d07_d08_p33();
-        //ex_4_3_chirp_512_cdf44_s6_p33();
-        //ex_4_3_chirp_512_cdf44_s5_p33();
-        fig_4_15a_p35();
+        display_signal_with_noise_ex_4_4_p34_512();
     }
 }
