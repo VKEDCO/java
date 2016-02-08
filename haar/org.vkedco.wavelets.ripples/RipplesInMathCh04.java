@@ -9,6 +9,7 @@ import org.vkedco.calc.utils.Ripples_F_ex_4_4_p34;
 import org.vkedco.wavelets.haar.OneDHaar;
 import org.vkedco.wavelets.ripples.CDF44;
 import org.vkedco.wavelets.utils.Utils;
+import org.vkedco.wavelets.ripples.ApplyDWT;
 
 
 /**
@@ -23,6 +24,7 @@ import org.vkedco.wavelets.utils.Utils;
 public class RipplesInMathCh04 {
     
     public enum SIGNAL { D10, D9, D8, D7, D6, S6 };
+
     
     static double[] sDomain = Partition.partition(0, 511, 1);
     static double[] sDomainFig_4_12_p33 = Partition.partition(0.0, 1.0, 1.0/1024.0);
@@ -202,13 +204,8 @@ public class RipplesInMathCh04 {
         multires_fig_4_13_p34("Fig. 4.13, S6-06-07-08-09-010, p. 33", S6_START_1024, S6_END_1024);
     }
     
-    // 1) Given a signal, apply several forward scales to it.
-    // 2) Inverse the signal on S.
-    // 3) Subtract the inversed signal from the original signal to
-    //    remove the slow variations.
-    // 4) what happens if we subtract the original signal from the inversed signal?
-    //    the fast variations become negative.
-    static void fig_4_15_p35() {
+    // remove slow variations with CDF44
+    static void fig_4_15_cdf44_p35() {
        for(int i = 0; i < 1024; i++)  {
             sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
         }
@@ -217,29 +214,26 @@ public class RipplesInMathCh04 {
             sRangeFig_4_12_p33[i] += 2;
         }
         
-        double[] sRangeFig_4_12_p33_original = new double[sRangeFig_4_12_p33.length];
-        System.arraycopy(sRangeFig_4_12_p33, 0, sRangeFig_4_12_p33_original, 0, sRangeFig_4_12_p33.length);
-
-        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        ApplyDWT.keepFastVariationsInSignal(sRangeFig_4_12_p33, ApplyDWT.DWT.CDF44, 6, S6_START_1024, S6_END_1024);
         
-        double[] signal = new double[sRangeFig_4_12_p33.length];
-        for(int i = 0; i < 1024; i++) {
-            if ( i >= S6_START_1024 && i <= S6_END_1024 ) {
-                signal[i] = sRangeFig_4_12_p33[i];
-            }
-            else {
-                signal[i] = 0;
-            }
+        display_signal(sRangeFig_4_12_p33);
+        System.out.println("=========================");  
+    }
+    
+    // remove slow variations with HWT
+    static void fig_4_15_hwt_p35() {
+       for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
         }
         
-        CDF44.orderedInverseDWTForNumIters(signal, 6, false);
-        
-        for(int i = 0; i < sRangeFig_4_12_p33_original.length; i++) {
-            sRangeFig_4_12_p33_original[i] -= signal[i];
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
         }
         
-        display_signal(sRangeFig_4_12_p33_original);
-        System.out.println("=========================");
+        ApplyDWT.keepFastVariationsInSignal(sRangeFig_4_12_p33, ApplyDWT.DWT.HWT, 6, S6_START_1024, S6_END_1024);
+        
+        display_signal(sRangeFig_4_12_p33);
+        System.out.println("========================="); 
     }
     
     static void fig_4_15a_p35() {
@@ -970,7 +964,7 @@ public class RipplesInMathCh04 {
     
     // ex 4.4, p. 34
     static void multires_ex_4_4_cdf44_p34(String message, int range_start, int range_end, int signal_size, int num_scales) {
-        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 200, 4.0);
+        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 500, 4.0);
         
         CDF44.orderedDWTForNumIters(noisy_signal, num_scales, false);
         
@@ -993,10 +987,11 @@ public class RipplesInMathCh04 {
         display_signal(signal_transform);
         System.out.println("=========================");
     }
+    
     static void ex_4_4_512_cdf44_d8_p34() {
         multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D8, p. 34", D8_START_512, D8_END_512, 512, 3);
     }
-    
+   
     static void ex_4_4_512_cdf44_d7_p34() {
         multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D7, p. 34", D7_START_512, D7_END_512, 512, 3);
     }
@@ -1016,6 +1011,32 @@ public class RipplesInMathCh04 {
     static void ex_4_4_512_cdf44_s5_p34() {
         multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
     }
+    
+    // ====== START: ex 4.4 with a signal size = 1024
+    static void ex_4_4_1024_cdf44_d10_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D10, p. 34", D10_START_1024, D10_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_cdf44_d9_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D9, p. 34", D9_START_1024, D9_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_cdf44_d8_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D9, p. 34", D8_START_1024, D8_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_cdf44_d7_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D7, p. 34", D7_START_1024, D7_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_cdf44_d6_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, D6, p. 34", D6_START_1024, D6_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_cdf44_s6_p34() {
+        multires_ex_4_4_cdf44_p34("Ex. 4.4, CDF44, S6, p. 34", S6_START_1024, S6_END_1024, 1024, 5);
+    }
+    // ====== END: ex 4.4 with a signal size = 1024
     
     static void multires_ex_4_4_hwt_p34(String message, int range_start, int range_end, int signal_size, int num_scales) {
         double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 200, 4.0);
@@ -1068,8 +1089,15 @@ public class RipplesInMathCh04 {
     
     
     public static void main(String[] args) {
-        //display_signal_with_noise_ex_4_4_p34_512();
         
+        //fig_4_15_cdf44_p35();
+        //fig_4_15_hwt_p35();
+        //ex_4_4_1024_cdf44_d10_p34();
+        //ex_4_4_1024_cdf44_d9_p34();
+        //ex_4_4_1024_cdf44_d8_p34();
+        
+        //display_signal_with_noise_ex_4_4_p34_512();
+        //display_signal_with_noise_ex_4_4_p34_1024();
         //ex_4_4_512_cdf44_d8_p34(); //done
         //ex_4_4_512_hwt_d8_p34();   //done
         
