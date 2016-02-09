@@ -33,35 +33,39 @@ public class RipplesInMathCh04 {
     static Ripples_F_p25 sRipples_F_p25 = new Ripples_F_p25();
     static Ripples_F_p33 sRipples_F_p33 = new Ripples_F_p33();
     
-    static final int D10_START_1024  = 512;
+    static final int D10_START_1024  = 512; // 1st iter
     static final int D10_END_1024    = 1023;
     
-    static final int D9_START_1024   = 256;
+    static final int D9_START_1024   = 256; // 2nd iter
     static final int D9_END_1024     = 511;
     
-    static final int D8_START_1024   = 128;
+    static final int D8_START_1024   = 128; // 3rd iter
     static final int D8_END_1024     = 255;
     
-    static final int D7_START_1024   = 64;
+    static final int D7_START_1024   = 64;  // 4th iter
     static final int D7_END_1024     = 127;
     
-    static final int D6_START_1024   = 32;
+    static final int D6_START_1024   = 32;  // 5th iter
     static final int D6_END_1024     = 63;
     
-    static final int S6_START_1024   = 0;
+    static final int S6_START_1024   = 0;   // 5th iter
     static final int S6_END_1024     = 31;
     
-    static final int D8_START_512   = 256; 
+    static final int D8_START_512   = 256;  // 1st iter
     static final int D8_END_512     = 511;
-    static final int D7_START_512   = 128; 
+    
+    static final int D7_START_512   = 128;  // 2nd iter
     static final int D7_END_512     = 255;
-    static final int D6_START_512   = 64; 
+    
+    static final int D6_START_512   = 64;   // 3rd iter
     static final int D6_END_512     = 127;
-    static final int S6_START_512   = 0;   
+    
+    static final int S6_START_512   = 0;    // 4th iter
     static final int S6_END_512     = 63;
     
-    static final int D5_START_512   = 32;
+    static final int D5_START_512   = 32;   // 5th iter
     static final int D5_END_512     = 63;
+    
     static final int S5_START_512   = 0;
     static final int S5_END_512     = 31;
     
@@ -214,7 +218,7 @@ public class RipplesInMathCh04 {
             sRangeFig_4_12_p33[i] += 2;
         }
         
-        ApplyDWT.keepFastVariationsInSignal(sRangeFig_4_12_p33, ApplyDWT.DWT.CDF44, 6, S6_START_1024, S6_END_1024);
+        ApplyDWT.keepFastVariationsInSignal(sRangeFig_4_12_p33, ApplyDWT.DWT.CDF44, 5, S6_START_1024, S6_END_1024);
         
         display_signal(sRangeFig_4_12_p33);
         System.out.println("=========================");  
@@ -230,7 +234,7 @@ public class RipplesInMathCh04 {
             sRangeFig_4_12_p33[i] += 2;
         }
         
-        ApplyDWT.keepFastVariationsInSignal(sRangeFig_4_12_p33, ApplyDWT.DWT.HWT, 6, S6_START_1024, S6_END_1024);
+        ApplyDWT.keepFastVariationsInSignal(sRangeFig_4_12_p33, ApplyDWT.DWT.HWT, 5, S6_START_1024, S6_END_1024);
         
         display_signal(sRangeFig_4_12_p33);
         System.out.println("========================="); 
@@ -248,7 +252,7 @@ public class RipplesInMathCh04 {
         double[] sRangeFig_4_12_p33_original = new double[sRangeFig_4_12_p33.length];
         System.arraycopy(sRangeFig_4_12_p33, 0, sRangeFig_4_12_p33_original, 0, sRangeFig_4_12_p33.length);
 
-        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 5, false);
         
         double[] signal = new double[sRangeFig_4_12_p33.length];
         for(int i = 0; i < 1024; i++) {
@@ -260,7 +264,7 @@ public class RipplesInMathCh04 {
             }
         }
         
-        CDF44.orderedInverseDWTForNumIters(signal, 6, false);
+        CDF44.orderedInverseDWTForNumIters(signal, 5, false);
         
         for(int i = 0; i < sRangeFig_4_12_p33_original.length; i++) {
             signal[i] -=  sRangeFig_4_12_p33_original[i];
@@ -1039,7 +1043,7 @@ public class RipplesInMathCh04 {
     // ====== END: ex 4.4 with a signal size = 1024
     
     static void multires_ex_4_4_hwt_p34(String message, int range_start, int range_end, int signal_size, int num_scales) {
-        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 200, 4.0);
+        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 500, 4.0);
         
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(noisy_signal, num_scales);
         
@@ -1063,6 +1067,7 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");
     }
     
+    // ====== START: ex 4.4 with a signal w/ noise, HWT
     static void ex_4_4_512_hwt_d8_p34() {
         multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, D8, p. 34", D8_START_512, D8_END_512, 512, 3);
     }
@@ -1087,6 +1092,51 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
     }
     
+     // ====== START: ex 4.4 with a signal size = 1024
+    static void ex_4_4_1024_hwt_d10_p34() {
+        multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, D10, p. 34", D10_START_1024, D10_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_hwt_d9_p34() {
+        multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, D9, p. 34", D9_START_1024, D9_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_hwt_d8_p34() {
+        multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, D9, p. 34", D8_START_1024, D8_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_hwt_d7_p34() {
+        multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, D7, p. 34", D7_START_1024, D7_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_hwt_d6_p34() {
+        multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, D6, p. 34", D6_START_1024, D6_END_1024, 1024, 5);
+    }
+    
+    static void ex_4_4_1024_hwt_s6_p34() {
+        multires_ex_4_4_hwt_p34("Ex. 4.4, HWT, S6, p. 34", S6_START_1024, S6_END_1024, 1024, 5);
+    }
+    // ====== END: ex 4.4 with a signal w/ noise, HWT
+    
+    // remove slow variations with CDF44
+    static void ex_4_4_cdf44_remove_slow_variations_p34() {
+        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(1024, 500, 4.0);
+        
+        ApplyDWT.keepFastVariationsInSignal(noisy_signal, ApplyDWT.DWT.CDF44, 5, S6_START_1024, S6_END_1024);
+        
+        display_signal(noisy_signal);
+        System.out.println("=========================");  
+    }
+    
+    // remove slow variations with HWT
+    static void ex_4_4_hwt_remove_slow_variations_p34() {
+        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(1024, 500, 4.0);
+        
+        ApplyDWT.keepFastVariationsInSignal(noisy_signal, ApplyDWT.DWT.HWT, 5, S6_START_1024, S6_END_1024);
+        
+        display_signal(noisy_signal);
+        System.out.println("=========================");  
+    }
     
     public static void main(String[] args) {
         
@@ -1095,7 +1145,20 @@ public class RipplesInMathCh04 {
         //ex_4_4_1024_cdf44_d10_p34();
         //ex_4_4_1024_cdf44_d9_p34();
         //ex_4_4_1024_cdf44_d8_p34();
+        //ex_4_4_1024_cdf44_d7_p34();
+        //ex_4_4_1024_cdf44_d6_p34();
+        //ex_4_4_1024_cdf44_s6_p34();
         
+        //ex_4_4_1024_hwt_d10_p34();
+        //ex_4_4_1024_hwt_d9_p34();
+        //ex_4_4_1024_hwt_d8_p34();
+        //ex_4_4_1024_hwt_d7_p34();
+        //ex_4_4_1024_hwt_d6_p34();
+        //ex_4_4_1024_hwt_s6_p34();
+        
+        //ex_4_4_cdf44_remove_slow_variations_p34();
+        //ex_4_4_hwt_remove_slow_variations_p34();
+
         //display_signal_with_noise_ex_4_4_p34_512();
         //display_signal_with_noise_ex_4_4_p34_1024();
         //ex_4_4_512_cdf44_d8_p34(); //done
