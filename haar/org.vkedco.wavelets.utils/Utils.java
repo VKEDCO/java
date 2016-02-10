@@ -89,4 +89,10 @@ public class Utils {
         return true;
     }
     
+    public static double[] copySignal(double[] sig) {
+        double[] sigCopy = new double[sig.length];
+        System.arraycopy(sig, 0, sigCopy, 0, sig.length);
+        return sigCopy;
+    }
+    
 }
