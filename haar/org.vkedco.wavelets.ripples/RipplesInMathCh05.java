@@ -99,14 +99,53 @@ public class RipplesInMathCh05 {
         System.out.println();
     }
     
-    public static void main(String[] args) {
-        reconstructTable_5_1_p38();
-        reconstructTable_5_2_p38();
-        reconstructTable_5_3_p38();
-        reconstructTable_5_4_p38();
-        reconstructTable_5_5_p38();
-        reconstructTable_5_6_p38();
-        reconstructTable_5_7_p38();
-        reconstructTable_5_8_p38();
+    public static double[] constructBasisSignal(int len, int bit_pos) {
+        double[] bs = new double[len];
+        for(int i = 0; i < len; i++) {
+            if ( i != bit_pos )
+                bs[i] = 0;
+            else
+                bs[i] = 1;
+        }
+        return bs;
     }
+    
+    public static double[][] computeInverseHaarMatrix(int num_iters) {
+        final int len = (int)(Math.pow(2, num_iters));
+        double[][] im = new double[len][len];
+        
+        for(int i = 0; i < len; i++) {
+            double[] sig = constructBasisSignal(len, i);
+            OneDHaar.orderedFastInverseHaarWaveletTransformForNumIters(sig, num_iters);
+            for(int r = 0; r < len; r++) {
+                im[r][i] = sig[r];
+            }
+            sig = null;
+        }
+        return im;
+    }
+    
+    public static double[][] computeDirectHaarMatrix(int num_iters) {
+        final int len = (int)(Math.pow(2, num_iters));
+        double[][] dm = new double[len][len];
+        
+        for(int i = 0; i < len; i++) {
+            double[] sig = constructBasisSignal(len, i);
+            OneDHaar.orderedFastHaarWaveletTransformForNumIters(sig, num_iters);
+            for(int r = 0; r < len; r++) {
+                dm[r][i] = sig[r];
+            }
+            sig = null;
+        }
+        return dm;
+    }
+    
+    public static void main(String[] args) {
+        double[][] im = computeInverseHaarMatrix(3);
+        double[][] dm = computeDirectHaarMatrix(3);
+        Utils.display2DArray(im, 8, 8);
+        System.out.println();
+        Utils.display2DArray(dm, 8, 8);
+    }
+    
 }
