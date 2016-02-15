@@ -598,7 +598,7 @@ public class RipplesInMathCh04 {
     }
     
     // =========================================================================
-    static void multires_fig_4_10_p32(String message, int range_start, int range_end) {
+    static void multires_fig_4_10_p32(String message, int range_start, int range_end, int num_iters) {
         for(int i = 0; i < 512; i++)  {
             sRange[i] = sRipples_F_p25.v(sDomain[i]);
         }
@@ -606,7 +606,7 @@ public class RipplesInMathCh04 {
         sRange[200] = 2; // spike at 200
         addNoiseToSignal(sRange);
         
-        CDF44.orderedDWTForNumIters(sRange, 3, false);
+        CDF44.orderedDWTForNumIters(sRange, num_iters, false);
         
         double[] signal = new double[sRange.length];
         for(int i = 0; i < 512; i++) {
@@ -623,7 +623,7 @@ public class RipplesInMathCh04 {
         display_signal(signal);
         System.out.println("=========================");
         System.out.println("inverse signal");
-        CDF44.orderedInverseDWTForNumIters(signal, 3, false);
+        CDF44.orderedInverseDWTForNumIters(signal, num_iters, false);
         display_signal(signal);
         System.out.println("=========================");
     }
@@ -743,22 +743,30 @@ public class RipplesInMathCh04 {
 
     // d8 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_s06_d06_d07_D8_p32() {
-        multires_fig_4_10_p32("06-06-07-D8, Fig. 4.10, p. 32", D8_START_512, D8_END_512);
+        multires_fig_4_10_p32("06-06-07-D8, Fig. 4.10, p. 32", D8_START_512, D8_END_512, 3);
     }
     
     // d7 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_s06_d06_D7_d08_p32() {
-        multires_fig_4_10_p32("06-06-D7-08, Fig. 4.10, p. 32", D7_START_512, D7_END_512);
+        multires_fig_4_10_p32("06-06-D7-08, Fig. 4.10, p. 32", D7_START_512, D7_END_512, 3);
     }
     
     // d6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_s06_D6_d07_d08_p32() {
-        multires_fig_4_10_p32("06-D6-07-08, Fig. 4.10, p. 32", D6_START_512, D6_END_512);
+        multires_fig_4_10_p32("06-D6-07-08, Fig. 4.10, p. 32", D6_START_512, D6_END_512, 3);
     }
     
     // s6 range values for Fig. 4.10, p. 32 in "Ripples in Mathematics."
     static void fig_4_10_S6_d06_d07_d08_p32() {
-        multires_fig_4_10_p32("S6-06-07-08, Fig. 4.10, p. 32", S6_START_512, S6_END_512);
+        multires_fig_4_10_p32("S6-06-07-08, Fig. 4.10, p. 32", S6_START_512, S6_END_512, 3);
+    }
+    
+    static void fig_4_10_S5_d06_d07_d08_p32() {
+        multires_fig_4_10_p32("S5-05-06-07-08, Fig. 4.10, p. 32", S5_START_512, S5_END_512, 4);
+    }
+    
+    static void fig_4_10_s05_D5_d06_d07_d08_p32() {
+        multires_fig_4_10_p32("05-D5-06-07-08, Fig. 4.10, p. 32", D5_START_512, D5_END_512, 4);
     }
 
     static void keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
@@ -1139,44 +1147,13 @@ public class RipplesInMathCh04 {
     }
     
     public static void main(String[] args) {
+        //fig_4_10_s06_d06_d07_D8_p32();
+        //fig_4_10_s06_d06_D7_d08_p32();
+        //fig_4_10_s06_D6_d07_d08_p32();
+        //fig_4_10_S6_d06_d07_d08_p32();
         
-        //fig_4_15_cdf44_p35();
-        //fig_4_15_hwt_p35();
-        //ex_4_4_1024_cdf44_d10_p34();
-        //ex_4_4_1024_cdf44_d9_p34();
-        //ex_4_4_1024_cdf44_d8_p34();
-        //ex_4_4_1024_cdf44_d7_p34();
-        //ex_4_4_1024_cdf44_d6_p34();
-        //ex_4_4_1024_cdf44_s6_p34();
-        
-        //ex_4_4_1024_hwt_d10_p34();
-        //ex_4_4_1024_hwt_d9_p34();
-        //ex_4_4_1024_hwt_d8_p34();
-        //ex_4_4_1024_hwt_d7_p34();
-        //ex_4_4_1024_hwt_d6_p34();
-        //ex_4_4_1024_hwt_s6_p34();
-        
-        //ex_4_4_cdf44_remove_slow_variations_p34();
-        //ex_4_4_hwt_remove_slow_variations_p34();
+        fig_4_10_S5_d06_d07_d08_p32();
+        //fig_4_10_s05_D5_d06_d07_d08_p32();
 
-        //display_signal_with_noise_ex_4_4_p34_512();
-        //display_signal_with_noise_ex_4_4_p34_1024();
-        //ex_4_4_512_cdf44_d8_p34(); //done
-        //ex_4_4_512_hwt_d8_p34();   //done
-        
-        //ex_4_4_512_cdf44_d7_p34();  //done
-        //ex_4_4_512_hwt_d7_p34();    //done
-        
-        //ex_4_4_512_cdf44_d6_p34();   //done
-        //ex_4_4_512_hwt_d6_p34();     //done
-        
-        //ex_4_4_512_cdf44_s6_p34();    //done
-        //ex_4_4_512_hwt_s6_p34();      //done
-        
-        //ex_4_4_512_cdf44_d5_p34();    //done
-        //ex_4_4_512_hwt_d5_p34();      //done
-        
-        //ex_4_4_512_cdf44_s5_p34();    //done
-        //ex_4_4_512_hwt_s5_p34();      //done
     }
 }
