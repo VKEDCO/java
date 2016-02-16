@@ -582,10 +582,10 @@ public class RipplesInMathCh04 {
         OneDHaar.orderedNormalizedFastHaarWaveletTransformForNumIters(sRange, 3);
         
         //double percent = 20.0;
-        keep_top_N_percent(sRange, D8_START_512, D8_END_512, percent);
-        keep_top_N_percent(sRange, D7_START_512, D7_END_512, percent);
-        keep_top_N_percent(sRange, D6_START_512, D6_END_512, percent);
-        keep_top_N_percent(sRange, S6_START_512, S6_END_512, percent);
+        keepTopNPercentInRange(sRange, D8_START_512, D8_END_512, percent);
+        keepTopNPercentInRange(sRange, D7_START_512, D7_END_512, percent);
+        keepTopNPercentInRange(sRange, D6_START_512, D6_END_512, percent);
+        keepTopNPercentInRange(sRange, S6_START_512, S6_END_512, percent);
         
         System.out.println("=========================");
         System.out.println("Processed Signal with Noise:");
@@ -649,7 +649,7 @@ public class RipplesInMathCh04 {
         }
         
         // keep only top_n percent of the computed coeffs in range
-        keep_top_N_percent(signal, range_start, range_end, top_n_percent);
+        keepTopNPercentInRange(signal, range_start, range_end, top_n_percent);
         
         System.out.println("=========================");
         System.out.println(message);
@@ -673,10 +673,10 @@ public class RipplesInMathCh04 {
         
         CDF44.orderedDWTForNumIters(sRange, 3, false);
         
-        keep_top_N_percent(sRange, D8_START_512, D8_END_512, percent);
-        keep_top_N_percent(sRange, D7_START_512, D7_END_512, percent);
-        keep_top_N_percent(sRange, D6_START_512, D6_END_512, percent);
-        keep_top_N_percent(sRange, S6_START_512, S6_END_512, percent);
+        keepTopNPercentInRange(sRange, D8_START_512, D8_END_512, percent);
+        keepTopNPercentInRange(sRange, D7_START_512, D7_END_512, percent);
+        keepTopNPercentInRange(sRange, D6_START_512, D6_END_512, percent);
+        keepTopNPercentInRange(sRange, S6_START_512, S6_END_512, percent);
         
         System.out.println("=========================");
         System.out.println("Processed Signal with Noise:");
@@ -689,52 +689,52 @@ public class RipplesInMathCh04 {
     }
     
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=10%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=10%
     static void fig_4_11_top_10_p32() {
         fig_4_11_p32_top_n(10.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=20%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=20%
     static void fig_4_11_top_20_p32() {
         fig_4_11_p32_top_n(20.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=30%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=30%
     static void fig_4_11_top_30_p32() {
         fig_4_11_p32_top_n(30.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=40%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics.", top=40%
     static void fig_4_11_top_40_p32() {
         fig_4_11_p32_top_n(40.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=50%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics." top=50%
     static void fig_4_11_top_50_p32() {
         fig_4_11_p32_top_n(50.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=60%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics." top=60%
     static void fig_4_11_top_60_p32() {
         fig_4_11_p32_top_n(60.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=70%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics." top=70%
     static void fig_4_11_top_70_p32() {
         fig_4_11_p32_top_n(70.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=80%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics." top=80%
     static void fig_4_11_top_80_p32() {
         fig_4_11_p32_top_n(80.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=90%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics." top=90%
     static void fig_4_11_top_90_p32() {
         fig_4_11_p32_top_n(90.0);
     }
     
-    // s6 range values for Fig. 4.11, p. 32 in "Ripples in Mathematics." top=100%
+    // Fig. 4.11, p. 32 in "Ripples in Mathematics." top=100%
     static void fig_4_11_top_100_p32() {
         fig_4_11_p32_top_n(100.0);
     }
@@ -769,7 +769,7 @@ public class RipplesInMathCh04 {
         multires_fig_4_10_p32("05-D5-06-07-08, Fig. 4.10, p. 32", D5_START_512, D5_END_512, 4);
     }
 
-    static void keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
+    static void keepTopNPercentInRange(double[] signal, int range_start, int range_end, double percent) {
         if ( percent < 0.0 || percent > 100.0 ) throw new IllegalArgumentException("percent < 0 or > 100");
         if ( percent == 100.0 ) return; // no need to do anything
         
@@ -779,11 +779,12 @@ public class RipplesInMathCh04 {
         System.arraycopy(signal, range_start, sorted_range, 0, range_length);
         Arrays.sort(sorted_range); // sort the range
         final int percent_len = (int) (range_length * (percent/100.0));
+        // 100 - 90 = 10
         final int sorted_range_min_index = Math.max(0, Math.min(range_length - percent_len, range_length - 1));
         
         if ( sorted_range_min_index > range_length - 1 ) {
-            System.out.println("range cannot be discretized");
-            return;
+            throw new IllegalArgumentException("Range cannot be discretized: " 
+                    + range_start + ", " + range_end + ", " + percent);
         }
         
         /*
@@ -816,20 +817,7 @@ public class RipplesInMathCh04 {
     // to 0.
     
     
-    // 10% coefficients.
-    // Given an array, sort it, then take the top percent
-    public static void topNPercent(double[] ary, double percent) {
-        for(int i = 0; i < ary.length; i++) { System.out.print(ary[i] + " "); }
-        System.out.println();
-        Arrays.sort(ary);
-        for(int i = 0; i < ary.length; i++) { System.out.print(ary[i] + " "); }
-        System.out.println();
-        int len = (int) (ary.length * (percent/100.0));
-        System.out.println(len);
-        int end = ary.length - 1;
-        int start = Math.max(0, end - len + 1);
-        System.out.println("start = " + start + " end = " + end); 
-    }
+
     
     // this is for ex. 4.3, p. 33
     static double[] generate_chirp(int len) {
@@ -857,15 +845,6 @@ public class RipplesInMathCh04 {
         double[] chirp_signal = generate_chirp(1024);
         display_signal(chirp_signal);
         chirp_signal = null;
-    }
-    
-    static void testTopNPercent() {
-        double[] a1 = {20, 1, 17, 11, 2, 8, 10, 4, 9, 19};
-        
-        topNPercent(a1, 100.0);
-        Utils.displaySample(a1);
-        keep_top_N_percent(a1, 0, 9, 100.0);
-        Utils.displaySample(a1);
     }
     
     static void multires_ex_4_3_cdf44_p33(String message, int range_start, int range_end, int signal_size, int num_scales) {
@@ -1146,14 +1125,26 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");  
     }
     
+    static void test_keep_top_N_percent(double[] signal, int range_start, int range_end, double percent) {
+        
+        Utils.displaySample(signal);
+        
+        keepTopNPercentInRange(signal, range_start, range_end, percent);
+        
+        Utils.displaySample(signal);
+    }
+    
     public static void main(String[] args) {
         //fig_4_10_s06_d06_d07_D8_p32();
         //fig_4_10_s06_d06_D7_d08_p32();
         //fig_4_10_s06_D6_d07_d08_p32();
         //fig_4_10_S6_d06_d07_d08_p32();
         
-        fig_4_10_S5_d06_d07_d08_p32();
+        //fig_4_10_S5_d06_d07_d08_p32();
         //fig_4_10_s05_D5_d06_d07_d08_p32();
-
+        //double[] sig10 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        
+        //test_keep_top_N_percent(sig10, 5, 9, 50);
+        fig_4_11_top_100_p32();
     }
 }
