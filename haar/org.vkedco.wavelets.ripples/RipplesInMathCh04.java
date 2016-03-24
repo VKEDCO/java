@@ -148,8 +148,6 @@ public class RipplesInMathCh04 {
             sRangeFig_4_12_p33[i] += 2;
         }
         
-        //CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
-        
         display_signal(sRangeFig_4_12_p33);
     }
     
@@ -184,31 +182,31 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");
     }
     
-    static void fig_4_13_s06_d06_d07_d08_d09_D10_p34() {
+    static void fig_4_13_D10_p34() {
         multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-09-D10, p. 33", D10_START_1024, D10_END_1024);
     }
     
-    static void fig_4_13_s06_d06_d07_d08_D9_d010_p34() {
+    static void fig_4_13_D9_p34() {
         multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-D9-010, p. 33", D9_START_1024, D9_END_1024);
     }
     
-    static void fig_4_13_s06_d06_d07_D8_d09_d010_p34() {
+    static void fig_4_13_D8_p34() {
         multires_fig_4_13_p34("Fig. 4.13, 06-06-07-D8-09-010, p. 33", D8_START_1024, D8_END_1024);
     }
     
-    static void fig_4_13_s06_d06_D7_d08_d09_d010_p34() {
+    static void fig_4_13_D7_p34() {
         multires_fig_4_13_p34("Fig. 4.13, 06-06-D7-08-09-010, p. 33", D7_START_1024, D7_END_1024);
     }
     
-    static void fig_4_13_s06_D6_d07_d08_d09_d010_p34() {
+    static void fig_4_13_D6_p34() {
         multires_fig_4_13_p34("Fig. 4.13, 06-D6-07-08-09-010, p. 33", D6_START_1024, D6_END_1024);
     }
     
-    static void fig_4_13_S6_d06_d07_d08_d09_d010_p34() {
+    static void fig_4_13_S6_p34() {
         multires_fig_4_13_p34("Fig. 4.13, S6-06-07-08-09-010, p. 33", S6_START_1024, S6_END_1024);
     }
     
-    // remove slow variations with CDF44
+    // ================== remove slow variations with CDF44
     static void fig_4_15_cdf44_p35() {
        for(int i = 0; i < 1024; i++)  {
             sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
@@ -224,7 +222,7 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");  
     }
     
-    // remove slow variations with HWT
+    // ===================== remove slow variations with HWT
     static void fig_4_15_hwt_p35() {
        for(int i = 0; i < 1024; i++)  {
             sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
@@ -817,8 +815,6 @@ public class RipplesInMathCh04 {
     // to 0.
     
     
-
-    
     // this is for ex. 4.3, p. 33
     static double[] generate_chirp(int len) {
         double[] chirp_signal = new double[len];
@@ -850,7 +846,8 @@ public class RipplesInMathCh04 {
     static void multires_ex_4_3_cdf44_p33(String message, int range_start, int range_end, int signal_size, int num_scales) {
         double[] chirp_signal = generate_chirp(signal_size);
         
-        CDF44.orderedDWTForNumIters(chirp_signal, num_scales, false);
+        //CDF44.orderedDWTForNumIters(chirp_signal, num_scales, false);
+        ApplyDWT.forwardDWTForNumIters(chirp_signal, ApplyDWT.DWT.CDF44, num_scales, range_start, range_end);
         
         double[] signal = new double[signal_size];
         for(int i = 0; i < signal_size; i++) {
@@ -867,7 +864,8 @@ public class RipplesInMathCh04 {
         display_signal(signal);
         System.out.println("Inversed Signal");
         System.out.println("=========================");
-        CDF44.orderedInverseDWTForNumIters(signal, num_scales, false);
+        //CDF44.orderedInverseDWTForNumIters(signal, num_scales, false);
+        ApplyDWT.inverseDWTForNumIters(signal, ApplyDWT.DWT.CDF44, num_scales);
         display_signal(signal);
         System.out.println("=========================");
     }
@@ -894,6 +892,55 @@ public class RipplesInMathCh04 {
     
     static void ex_4_3_chirp_512_cdf44_s5_p33() {
         multires_ex_4_3_cdf44_p33("Ex. 4.3, CDF44, S5, p. 33", S5_START_512, S5_END_512, 512, 4);
+    }
+    
+    static void multires_ex_4_3_hwt_p33(String message, int range_start, int range_end, int signal_size, int num_scales) {
+        double[] chirp_signal = generate_chirp(signal_size);
+        
+        ApplyDWT.forwardDWTForNumIters(chirp_signal, ApplyDWT.DWT.HWT, num_scales, range_start, range_end);
+        
+        double[] signal = new double[signal_size];
+        for(int i = 0; i < signal_size; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = chirp_signal[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        ApplyDWT.inverseDWTForNumIters(signal, ApplyDWT.DWT.HWT, num_scales);
+        display_signal(signal);
+        System.out.println("=========================");
+    }
+    
+    static void ex_4_3_chirp_512_hwt_d8_p33() {
+        multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, D8, p. 33", D8_START_512, D8_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_hwt_d7_p33() {
+        multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, D7, p. 33", D7_START_512, D7_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_hwt_d6_p33() {
+        multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, D6, p. 33", D6_START_512, D6_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_hwt_s6_p33() {
+        multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, S6, p. 33", S6_START_512, S6_END_512, 512, 3);
+    }
+    
+    static void ex_4_3_chirp_512_hwt_d5_p33() {
+        multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, D5, p. 33", D5_START_512, D5_END_512, 512, 4);
+    }
+    
+    static void ex_4_3_chirp_512_hwt_s5_p33() {
+        multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, S5, p. 33", S5_START_512, S5_END_512, 512, 4);
     }
     
     // this is for ex. 4.4, p. 34, w/o noise
@@ -1135,16 +1182,20 @@ public class RipplesInMathCh04 {
     }
     
     public static void main(String[] args) {
-        //fig_4_10_s06_d06_d07_D8_p32();
-        //fig_4_10_s06_d06_D7_d08_p32();
-        //fig_4_10_s06_D6_d07_d08_p32();
-        //fig_4_10_S6_d06_d07_d08_p32();
+        //fig_4_13_D10_p34(); 
         
-        //fig_4_10_S5_d06_d07_d08_p32();
-        //fig_4_10_s05_D5_d06_d07_d08_p32();
-        //double[] sig10 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        //fig_4_13_D9_p34(); 
+    
+        //fig_4_13_D8_p34(); 
+    
+        //fig_4_13_D7_p34(); 
         
-        //test_keep_top_N_percent(sig10, 5, 9, 50);
-        fig_4_11_top_100_p32();
+        //fig_4_13_D6_p34(); 
+    
+        //fig_4_13_S6_p34();
+        //ex_4_3_chirp_512_cdf44_d8_p33();
+        //ex_4_3_chirp_512_cdf44_d8_p33();
+        
+        ex_4_3_chirp_512_hwt_s5_p33();
     }
 }
