@@ -1223,6 +1223,26 @@ public class RipplesInMathCh04 {
         Utils.displaySample(signal);
     }
     
+    static void keep_slow_vars_in_fig_4_12_aux(double[] signal, ApplyDWT.DWT dwt, int num_iters) {
+        //fig_4_12_p33();
+        ApplyDWT.genericKeepSlowVarsInSignal(signal, dwt, num_iters);
+        //display_signal(signal);
+    }
+    
+    static void keep_slow_vars_in_fig_4_12_cdf44(int num_iters) {
+        fig_4_12_p33();
+        keep_slow_vars_in_fig_4_12_aux(sRangeFig_4_12_p33, ApplyDWT.DWT.CDF44, num_iters);
+        System.out.println("======");
+        display_signal(sRangeFig_4_12_p33);
+    }
+    
+    static void keep_slow_vars_in_fig_4_12_hwt(int num_iters) {
+        fig_4_12_p33();
+        keep_slow_vars_in_fig_4_12_aux(sRangeFig_4_12_p33, ApplyDWT.DWT.HWT, num_iters);
+        System.out.println("======");
+        display_signal(sRangeFig_4_12_p33);
+    }
+    
     public static void main(String[] args) {
         ex_4_3_chirp_512_hwt_s5_p33();
     }
