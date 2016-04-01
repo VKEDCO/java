@@ -99,7 +99,42 @@ public class ApplyDWT {
         signal_transform           = null;
     }
     
-    // to keep the fast variations. Given signal's size, n, and number of scales, num_scales, apply DWT for a given
+    // keep the fast variations. Given signal's size, n, and number of scales, num_scales, apply DWT for a given
     // number of scales. filter the s part of the transform. reconstruct the signal from the filtered s values.
     // subtract the reconstructed signal from the original signal
+    public static void genericKeepFastVarsInSignal(double[] signal, ApplyDWT.DWT dwt, int num_iters) {
+        // signal_transform holds the DWT transform of signal_tranform of ApplyDWT.DWT
+        double[] signal_transform           = new double[signal.length];
+        // - signal_with_filtered_range holds the slow variations filtered from the signal
+        // transform in the required range [range_start, range_end];
+        // - the reconstructed signal is reconstructed from filtered_range_from_signal_transform.
+        double[] filtered_range_from_signal_transform = new double[signal.length];
+        
+        // 0. copy signal into signal_transform.
+        System.arraycopy(signal, 0, signal_transform, 0, signal_transform.length);
+        // 1. apply forward DWT to signal.
+        forwardDWTForNumIters(signal_transform, dwt, num_iters);
+        // 2. filter the required range from signal transform into filtered_range_from_signal_transform;
+        //    filtered_range_from_signal_transform contains slow variations.
+        final int range_end = (signal.length/((int)Math.pow(2, num_iters)) - 1);
+        //System.out.println("range end == " + range_end);
+        filterSignalRange(signal_transform, filtered_range_from_signal_transform, 0, range_end);
+        // 3. reconstruct signal from slow variations for the same number of iterations
+        inverseDWTForNumIters(filtered_range_from_signal_transform, dwt, num_iters);
+        // 4. subtract the reconstructed signal from the original signal to keep the fast variations;
+        //    fast variations = original signal - signal reconstructed from slow variations.
+        subtractSignals(signal, filtered_range_from_signal_transform);
+        filtered_range_from_signal_transform = null;
+        signal_transform = null;
+    }
+    
+    // apply genericKeepFastVarsInSignal for a number of iterations
+    // subtract the fast iterations from the slow iterations
+    public static void genericKeepSlowVarsInSignal(double[] signal, ApplyDWT.DWT dwt, int num_iters) {
+        double[] signal_copy = new double[signal.length];
+        System.arraycopy(signal, 0, signal_copy, 0, signal.length);
+        genericKeepFastVarsInSignal(signal_copy, dwt, num_iters);
+        //System.out.println("N == " + signal.length);
+        ApplyDWT.subtractSignals(signal, signal_copy);
+    }
 }
