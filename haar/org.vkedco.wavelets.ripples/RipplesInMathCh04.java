@@ -60,7 +60,7 @@ public class RipplesInMathCh04 {
     static final int D6_START_512   = 64;   // 3rd iter
     static final int D6_END_512     = 127;
     
-    static final int S6_START_512   = 0;    // 4th iter
+    static final int S6_START_512   = 0;    // 3rd iter
     static final int S6_END_512     = 63;
     
     static final int D5_START_512   = 32;   // 5th iter
@@ -151,7 +151,10 @@ public class RipplesInMathCh04 {
         display_signal(sRangeFig_4_12_p33);
     }
     
-    static void multires_fig_4_13_p34(String message, int range_start, int range_end) {
+    static void multires_fig_4_13_cdf_p34(String message, int range_start, int range_end) {
+        multires_fig_4_13_p34_aux(message, ApplyDWT.DWT.CDF44, 6, range_start, range_end);
+        
+        /*
         for(int i = 0; i < 1024; i++)  {
             sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
         }
@@ -180,30 +183,96 @@ public class RipplesInMathCh04 {
         CDF44.orderedInverseDWTForNumIters(signal, 6, false);
         display_signal(signal);
         System.out.println("=========================");
+        */
     }
     
-    static void fig_4_13_D10_p34() {
-        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-09-D10, p. 33", D10_START_1024, D10_END_1024);
+    static void multires_fig_4_13_hwt_p34(String message, int range_start, int range_end) {
+        multires_fig_4_13_p34_aux(message, ApplyDWT.DWT.HWT, 6, range_start, range_end);
     }
     
-    static void fig_4_13_D9_p34() {
-        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-08-D9-010, p. 33", D9_START_1024, D9_END_1024);
+    static void multires_fig_4_13_p34_aux(String message, ApplyDWT.DWT dwt, int num_iters, int range_start, int range_end) {
+        for(int i = 0; i < 1024; i++)  {
+            sRangeFig_4_12_p33[i] = sRipples_F_p33.v(sDomainFig_4_12_p33[i]);
+        }
+        
+        for(int i = 1; i < 1024; i += 32) {
+            sRangeFig_4_12_p33[i] += 2;
+        }
+
+        //final int NUM_ITERS = 6;
+        ApplyDWT.forwardDWTForNumIters(sRangeFig_4_12_p33, dwt, num_iters, range_start, range_end);
+        
+        //CDF44.orderedDWTForNumIters(sRangeFig_4_12_p33, 6, false);
+        
+        double[] signal = new double[sRangeFig_4_12_p33.length];
+        for(int i = 0; i < 1024; i++) {
+            if ( i >= range_start && i <= range_end ) {
+                signal[i] = sRangeFig_4_12_p33[i];
+            }
+            else {
+                signal[i] = 0;
+            }
+        }
+        
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        
+        ApplyDWT.inverseDWTForNumIters(signal, dwt, num_iters);
+        //CDF44.orderedInverseDWTForNumIters(signal, 6, false);
+        
+        display_signal(signal);
+        System.out.println("=========================");
     }
     
-    static void fig_4_13_D8_p34() {
-        multires_fig_4_13_p34("Fig. 4.13, 06-06-07-D8-09-010, p. 33", D8_START_1024, D8_END_1024);
+    static void fig_4_13_D10_CDF44_p34() {
+        multires_fig_4_13_cdf_p34("Fig. 4.13, 06-06-07-08-09-D10, CDF(4,4) p. 33", D10_START_1024, D10_END_1024);
     }
     
-    static void fig_4_13_D7_p34() {
-        multires_fig_4_13_p34("Fig. 4.13, 06-06-D7-08-09-010, p. 33", D7_START_1024, D7_END_1024);
+    static void fig_4_13_D10_HWT_p34() {
+        multires_fig_4_13_hwt_p34("Fig. 4.13, 06-06-07-08-09-D10, HWT, p. 33", D10_START_1024, D10_END_1024);
+    }
+     
+    static void fig_4_13_D9_CDF44_p34() {
+        multires_fig_4_13_cdf_p34("Fig. 4.13, 06-06-07-08-D9-010, CDF(4,4), p. 33", D9_START_1024, D9_END_1024);
     }
     
-    static void fig_4_13_D6_p34() {
-        multires_fig_4_13_p34("Fig. 4.13, 06-D6-07-08-09-010, p. 33", D6_START_1024, D6_END_1024);
+    static void fig_4_13_D9_HWT_p34() {
+        multires_fig_4_13_hwt_p34("Fig. 4.13, 06-06-07-08-D9-010, HWT, p. 33", D9_START_1024, D9_END_1024);
     }
     
-    static void fig_4_13_S6_p34() {
-        multires_fig_4_13_p34("Fig. 4.13, S6-06-07-08-09-010, p. 33", S6_START_1024, S6_END_1024);
+    static void fig_4_13_D8_CDF44_p34() {
+        multires_fig_4_13_cdf_p34("Fig. 4.13, 06-06-07-D8-09-010, CDF(4,4), p. 33", D8_START_1024, D8_END_1024);
+    }
+    
+    static void fig_4_13_D8_HWT_p34() {
+        multires_fig_4_13_hwt_p34("Fig. 4.13, 06-06-07-D8-09-010, HWT, p. 33", D8_START_1024, D8_END_1024);
+    }
+    
+    static void fig_4_13_D7_CDF44_p34() {
+        multires_fig_4_13_cdf_p34("Fig. 4.13, 06-06-D7-08-09-010, CDF(4,4), p. 33", D7_START_1024, D7_END_1024);
+    }
+    
+    static void fig_4_13_D7_HWT_p34() {
+        multires_fig_4_13_hwt_p34("Fig. 4.13, 06-06-D7-08-09-010, HWT, p. 33", D7_START_1024, D7_END_1024);
+    }
+    
+    static void fig_4_13_D6_CDF44_p34() {
+        multires_fig_4_13_cdf_p34("Fig. 4.13, 06-D6-07-08-09-010, CDF(4,4), p. 33", D6_START_1024, D6_END_1024);
+    }
+    
+    static void fig_4_13_D6_HWT_p34() {
+        multires_fig_4_13_hwt_p34("Fig. 4.13, 06-D6-07-08-09-010, HWT, p. 33", D6_START_1024, D6_END_1024);
+    }
+    
+    static void fig_4_13_S6_CDF44_p34() {
+        multires_fig_4_13_cdf_p34("Fig. 4.13, S6-06-07-08-09-010, CDF(4,4), p. 33", S6_START_1024, S6_END_1024);
+    }
+    
+    static void fig_4_13_S6_HWT_p34() {
+        multires_fig_4_13_hwt_p34("Fig. 4.13, S6-06-07-08-09-010, HWT, p. 33", S6_START_1024, S6_END_1024);
     }
     
     // ================== remove slow variations with CDF44
@@ -919,6 +988,25 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");
     }
     
+    static void multires_ex_4_3_keep_fast_vars(String message, int signal_size, ApplyDWT.DWT dwt, int num_scales) {
+        double[] chirp_signal = generate_chirp(signal_size);
+        ApplyDWT.genericKeepFastVarsInSignal(chirp_signal, dwt, num_scales);
+        display_signal(chirp_signal);
+    }
+    
+    static void ex_4_3_keep_fast_vars_for_num_scales(String message, int signal_size, ApplyDWT.DWT dwt, int num_scales) {
+        double[] chirp_signal = generate_chirp(signal_size);
+        ApplyDWT.genericKeepFastVarsInSignal(chirp_signal, dwt, num_scales);
+        display_signal(chirp_signal);
+    }
+    
+    static void fig_4_12_keep_fast_vars_for_num_scales(ApplyDWT.DWT dwt, int num_scales) {
+        fig_4_12_p33();
+        System.out.println("====================");
+        ApplyDWT.genericKeepFastVarsInSignal(sRangeFig_4_12_p33, dwt, num_scales);
+        display_signal(sRangeFig_4_12_p33);
+    }
+    
     static void ex_4_3_chirp_512_hwt_d8_p33() {
         multires_ex_4_3_hwt_p33("Ex. 4.3, HWT, D8, p. 33", D8_START_512, D8_END_512, 512, 4);
     }
@@ -1243,7 +1331,17 @@ public class RipplesInMathCh04 {
         display_signal(sRangeFig_4_12_p33);
     }
     
+    // what is the difference b/w multi-resolution analysis and slow var removal?
     public static void main(String[] args) {
-        ex_4_3_chirp_512_hwt_s5_p33();
+        //keep_slow_vars_in_fig_4_12_cdf44(1);
+        //keep_slow_vars_in_fig_4_12_cdf44(2);
+        //keep_slow_vars_in_fig_4_12_cdf44(3);
+        //keep_slow_vars_in_fig_4_12_cdf44(4);
+        //keep_slow_vars_in_fig_4_12_cdf44(5);
+        //keep_slow_vars_in_fig_4_12_cdf44(6);
+        //keep_slow_vars_in_fig_4_12_cdf44(7);
+        //keep_slow_vars_in_fig_4_12_cdf44(8);
+        //keep_slow_vars_in_fig_4_12_hwt(8);
+        fig_4_13_S6_HWT_p34();
     }
 }
