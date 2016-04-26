@@ -1192,6 +1192,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D8, p. 34", D8_START_512, D8_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_d8_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D8, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 1);
     }
@@ -1200,6 +1201,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S8, p. 34", S8_START_512, S8_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_s8_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S8, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 1);
     }
@@ -1208,10 +1210,12 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D8, p. 34", D8_START_512, D8_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_d8_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D8, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 1);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_d7_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D7, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 2);
     }
@@ -1220,6 +1224,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S8, p. 34", S8_START_512, S8_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_s8_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S8, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 1);
     }
@@ -1232,6 +1237,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S7, p. 34", S7_START_512, S7_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_s7_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S7, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 2);
     }
@@ -1240,6 +1246,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D7, p. 34", D7_START_512, D7_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_d7_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D7, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 2);
     }
@@ -1248,6 +1255,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S7, p. 34", S7_START_512, S7_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_s7_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S7, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 2);
     }
@@ -1256,6 +1264,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D6, p. 34", D6_START_512, D6_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_d6_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D6, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 3);
     }
@@ -1264,6 +1273,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D6, p. 34", D6_START_512, D6_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_d6_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D6, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 3);
     }
@@ -1272,6 +1282,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S6, p. 34", S6_START_512, S6_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_s6_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S6, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 3);
     }
@@ -1280,6 +1291,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S6, p. 34", S6_START_512, S6_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_s6_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S6, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 3);
     }
@@ -1288,6 +1300,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D5, p. 34", D5_START_512, D5_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_d5_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D5, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 4);
     }
@@ -1296,6 +1309,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D5, p. 34", D5_START_512, D5_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_d5_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D5, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 4);
     }
@@ -1304,6 +1318,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_cdf44_s5_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S5, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 4);
     }
@@ -1312,6 +1327,7 @@ public class RipplesInMathCh04 {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
     static void multires_ex_4_4_512_with_noise_hwt_s5_p34_b() {
         multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S5, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 4);
     }
@@ -1424,9 +1440,8 @@ public class RipplesInMathCh04 {
         }   
     }
     
+   
     public static void main(String[] args) {
-        //multires_ex_4_4_512_with_noise_cdf44_d8_p34();
-        //multires_ex_4_4_512_with_noise_cdf44_s7_p34();
-        multires_ex_4_4_512_with_noise_hwt_s8_p34_b();
+        
     }
 }
