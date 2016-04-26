@@ -1,5 +1,14 @@
 package org.vkedco.wavelets.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *************************************************************** 
  * @author vladimir kulyukin
@@ -94,5 +103,64 @@ public class Utils {
         System.arraycopy(sig, 0, sigCopy, 0, sig.length);
         return sigCopy;
     }
+    
+    public static void display2DArray(double[][] ary, int num_rows, int num_cols) {
+        for(int r = 0; r < num_rows; r++) {
+            for(int c = 0; c < num_cols; c++) {
+                System.out.print(ary[r][c] + " ");
+            }
+            System.out.println();
+        }
+    }
+    
+    public static double[] readInPrimDoublesFromLineFile(String inpath) {
+        ArrayList<Double> nonPrimDoubles = new ArrayList<>();
+        double[] primDoubles = null;
+        
+        try {
+            BufferedReader bufRdr = new BufferedReader(new FileReader(new File(inpath) ) );
+            String line = null;
+            while ( (line = bufRdr.readLine() ) != null ) {
+                nonPrimDoubles.add(Double.valueOf(line));
+            }
+            
+            primDoubles = new double[nonPrimDoubles.size()];
+            int i = 0;
+            for(Double d: nonPrimDoubles) {
+                primDoubles[i++] = d;
+            }
+            nonPrimDoubles.clear();
+            nonPrimDoubles = null;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return primDoubles;
+    }
+    
+    public static void main(String[] args) {
+        double[] signal_1 = {1};
+        double[] signal_2 = {1, 2};
+        double[] signal_3 = {1, 2, 3};
+        double[] signal_4 = {1, 2, 3, 4};
+        double[] signal_11 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+        
+        double[] signal_1c  = largestSubsignalOfPowerOf2(signal_1);
+        double[] signal_2c  = largestSubsignalOfPowerOf2(signal_2);
+        double[] signal_3c  = largestSubsignalOfPowerOf2(signal_3);
+        double[] signal_4c  = largestSubsignalOfPowerOf2(signal_4);
+        double[] signal_11c = largestSubsignalOfPowerOf2(signal_11);
+        
+        displaySample(signal_1c);
+        displaySample(signal_2c);
+        displaySample(signal_3c);
+        displaySample(signal_4c);
+        displaySample(signal_11c);
+        
+        System.out.println(largestPowerOf2NoGreaterThan(1323000));
+    }
+    
     
 }
