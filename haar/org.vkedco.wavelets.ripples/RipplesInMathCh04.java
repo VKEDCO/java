@@ -6,6 +6,10 @@ import org.vkedco.calc.utils.Ripples_F_p25;
 import org.vkedco.calc.utils.Ripples_F_p33;
 import org.vkedco.calc.utils.Ripples_F_ex_4_3_p33;
 import org.vkedco.calc.utils.Ripples_F_ex_4_4_p34;
+import org.vkedco.calc.utils.Ripples_F_p25b;
+import org.vkedco.calc.utils.Ripples_F_p25c;
+import org.vkedco.calc.utils.Ripples_F_p25d;
+import org.vkedco.calc.utils.Ripples_F_p25e;
 import org.vkedco.wavelets.haar.OneDHaar;
 import org.vkedco.wavelets.ripples.CDF44;
 import org.vkedco.wavelets.utils.Utils;
@@ -51,8 +55,15 @@ public class RipplesInMathCh04 {
     static final int S6_START_1024   = 0;   // 5th iter
     static final int S6_END_1024     = 31;
     
+    // ==============  512 ==================
+    static final int S8_START_512   = 0;
+    static final int S8_END_512     = 257;
+    
     static final int D8_START_512   = 256;  // 1st iter
     static final int D8_END_512     = 511;
+    
+    static final int S7_START_512   = 0;
+    static final int S7_END_512     = 127;
     
     static final int D7_START_512   = 128;  // 2nd iter
     static final int D7_END_512     = 255;
@@ -76,9 +87,46 @@ public class RipplesInMathCh04 {
         for(int i = 0; i < 512; i++)  {
             sRange[i] = sRipples_F_p25.v(sDomain[i]);
         }
-        
-        display_signal(sRange);
+        // Uncomment if you want to display
+        //display_signal(sRange);
     }
+    
+    static void fig_4_1_p26b() {
+        Ripples_F_p25b f = new Ripples_F_p25b();
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = f.v(sDomain[i]);
+        }
+        // Uncomment if you want to display
+        //display_signal(sRange);
+    }
+    
+    static void fig_4_1_p26c() {
+        Ripples_F_p25c f = new Ripples_F_p25c();
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = f.v(sDomain[i]);
+        }
+        // Uncomment if you want to display
+        //display_signal(sRange);
+    }
+    
+    static void fig_4_1_p26d() {
+        Ripples_F_p25d f = new Ripples_F_p25d();
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = f.v(sDomain[i]);
+        }
+        // Uncomment if you want to display
+        //display_signal(sRange);
+    }
+    
+    static void fig_4_1_p26e() {
+        Ripples_F_p25e f = new Ripples_F_p25e();
+        for(int i = 0; i < 512; i++)  {
+            sRange[i] = f.v(sDomain[i]);
+        }
+        // Uncomment if you want to display
+        //display_signal(sRange);
+    }
+    
     // prints the range values for the plot in Fig. 4.2, p.26
     // in "Ripples in Mathematics."
     static void fig_4_2_p26() {
@@ -148,7 +196,7 @@ public class RipplesInMathCh04 {
             sRangeFig_4_12_p33[i] += 2;
         }
         
-        display_signal(sRangeFig_4_12_p33);
+        //display_signal(sRangeFig_4_12_p33);
     }
     
     static void multires_fig_4_13_cdf_p34(String message, int range_start, int range_end) {
@@ -1166,52 +1214,163 @@ public class RipplesInMathCh04 {
         System.out.println("=========================");
     }
     
+    // this is the same as above but uses ApplyDWT.multiresSignalReconstruct()
+    static void multires_ex_4_4_with_noise_p34(String message, ApplyDWT.DWT dwt, ApplyDWT.COEFF coeff, int signal_size, int num_scales, int scale_num) {
+        double[] noisy_signal = generate_signal_with_noise_ex_4_4_p34(signal_size, 500, 4.0);
+        
+        ApplyDWT.forwardDWTForNumIters(noisy_signal, dwt, num_scales);
+        System.out.println("=========================");
+        System.out.println(message);
+        display_signal(noisy_signal);
+        System.out.println("Inversed Signal");
+        System.out.println("=========================");
+        double[] signal_transform = ApplyDWT.multiresSignalReconstructFromS(noisy_signal, dwt, coeff, num_scales, scale_num);
+        display_signal(signal_transform);
+        System.out.println("=========================");
+    }
+    
     static void multires_ex_4_4_512_with_noise_cdf44_d8_p34() {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D8, p. 34", D8_START_512, D8_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_d8_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D8, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 1);
+    }
+    
+    static void multires_ex_4_4_512_with_noise_cdf44_s8_p34() {
+        multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S8, p. 34", S8_START_512, S8_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_s8_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S8, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 1);
+    }
+    
     static void multires_ex_4_4_512_with_noise_hwt_d8_p34() {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D8, p. 34", D8_START_512, D8_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_d8_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D8, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 1);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_d7_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D7, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 2);
+    }
+    
+    static void multires_ex_4_4_512_with_noise_hwt_s8_p34() {
+        multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S8, p. 34", S8_START_512, S8_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_s8_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S8, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 1);
     }
    
     static void multires_ex_4_4_512_with_noise_cdf44_d7_p34() {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D7, p. 34", D7_START_512, D7_END_512, 512, 4);
     }
     
+    static void multires_ex_4_4_512_with_noise_cdf44_s7_p34() {
+        multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S7, p. 34", S7_START_512, S7_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_s7_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S7, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 2);
+    }
+    
     static void multires_ex_4_4_512_with_noise_hwt_d7_p34() {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D7, p. 34", D7_START_512, D7_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_d7_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D7, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 2);
+    }
+    
+    static void multires_ex_4_4_512_with_noise_hwt_s7_p34() {
+        multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S7, p. 34", S7_START_512, S7_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_s7_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S7, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 2);
     }
     
     static void multires_ex_4_4_512_with_noise_cdf44_d6_p34() {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D6, p. 34", D6_START_512, D6_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_d6_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D6, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 3);
+    }
+    
     static void multires_ex_4_4_512_with_noise_hwt_d6_p34() {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D6, p. 34", D6_START_512, D6_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_d6_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D6, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 3);
     }
     
     static void multires_ex_4_4_512_with_noise_cdf44_s6_p34() {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S6, p. 34", S6_START_512, S6_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_s6_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S6, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 3);
+    }
+    
     static void multires_ex_4_4_512_with_noise_hwt_s6_p34() {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S6, p. 34", S6_START_512, S6_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_s6_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S6, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 3);
     }
     
     static void multires_ex_4_4_512_with_noise_cdf44_d5_p34() {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, D5, p. 34", D5_START_512, D5_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_d5_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, D5, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.D, 512, 4, 4);
+    }
+    
     static void multires_ex_4_4_512_with_noise_hwt_d5_p34() {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, D5, p. 34", D5_START_512, D5_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_d5_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, D5, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.D, 512, 4, 4);
     }
     
     static void multires_ex_4_4_512_with_noise_cdf44_s5_p34() {
         multires_ex_4_4_with_noise_cdf44_p34("Ex. 4.4, CDF44, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
     }
     
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_cdf44_s5_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, CDF44, S5, B, p. 34", ApplyDWT.DWT.CDF44, ApplyDWT.COEFF.S, 512, 4, 4);
+    }
+    
     static void multires_ex_4_4_512_with_noise_hwt_s5_p34() {
         multires_ex_4_4_with_noise_hwt_p34("Ex. 4.4, HWT, S5, p. 34", S5_START_512, S5_END_512, 512, 4);
+    }
+    
+    // same as above but uses ApplyDWT.multiresSignalReconstruct(noisy_signal, dwt, coeff, num_scales, scale_num);
+    static void multires_ex_4_4_512_with_noise_hwt_s5_p34_b() {
+        multires_ex_4_4_with_noise_p34("Ex. 4.4, HWT, S5, B, p. 34", ApplyDWT.DWT.HWT, ApplyDWT.COEFF.S, 512, 4, 4);
     }
     
     // ====== START: ex 4.4 with a signal size = 1024
@@ -1314,8 +1473,48 @@ public class RipplesInMathCh04 {
         display_signal(sRangeFig_4_12_p33);
     }
     
-    // TO DO: ex 4.4, removal of fast vars
+    static void testCoeffsIndices(int signal_len, int num_scales) {
+        for(int scale = 1; scale <= num_scales; scale *= 2) {
+            System.out.println("S's end:\t"   + signal_len + ", " + scale + ": " + ApplyDWT.getSCoeffsEnd(signal_len, scale));
+            System.out.println("D's start:\t" + signal_len + ", " + scale + ": " + ApplyDWT.getDCoeffsStart(signal_len, scale));
+            System.out.println("D's end:\t"   + signal_len + ", " + scale + ": " + ApplyDWT.getDCoeffsEnd(signal_len, scale));
+        }   
+    }
+    
+    static void testDoesSignalHaveFastVars() {
+        // this does not have many fast variations
+        fig_4_1_p26();
+        System.out.println("Fast Var Coeff: " + ApplyDWT.doesSignalContainFastVars(sRange, ApplyDWT.DWT.CDF44, 3));
+        // this does have a lot of fast variations
+        fig_4_12_p33();
+        System.out.println("Fast Var Coeff: " + ApplyDWT.doesSignalContainFastVars(sRangeFig_4_12_p33, ApplyDWT.DWT.CDF44, 3));
+    }
+    
+    static void computeSTDs() {
+        // this does not have many fast variations
+        //fig_4_1_p26();
+        //System.out.println("fig_4_1_p26(): HWT");
+        //ApplyDWT.computeSTDsForDWTMultiresCoeffs(sRange, ApplyDWT.DWT.HWT, 3, false);
+
+        
+        fig_4_1_p26b();
+        System.out.println("fig_4_1_p26b(): HWT");
+        ApplyDWT.computeSTDsForDWTMultiresCoeffs(sRange, ApplyDWT.DWT.HWT, 3, true);
+        
+        //fig_4_1_p26c();
+        //System.out.println("fig_4_1_p26c(): HWT");
+        //ApplyDWT.computeSTDsForDWTMultiresCoeffs(sRange, ApplyDWT.DWT.HWT, 3, false);
+        
+        //fig_4_1_p26d();
+        //System.out.println("fig_4_1_p26d(): HWT");
+        //ApplyDWT.computeSTDsForDWTMultiresCoeffs(sRange, ApplyDWT.DWT.HWT, 3, false);
+        
+        //fig_4_1_p26e();
+        //System.out.println("fig_4_1_p26e(): HWT");
+        //ApplyDWT.computeSTDsForDWTMultiresCoeffs(sRange, ApplyDWT.DWT.HWT, 3, false);
+    }
+    
     public static void main(String[] args) {
-        multires_ex_4_4_1024_with_noise_hwt_s6_p34();
+        computeSTDs();
     }
 }
