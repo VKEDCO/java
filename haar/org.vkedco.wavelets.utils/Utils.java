@@ -32,6 +32,27 @@ public class Utils {
         }
         System.out.println();
     }
+    
+    public static void displaySampleLineByLine(double[] sample) {
+        System.out.print("Sample: ");
+        for (int i = 0; i < sample.length; i++) {
+            System.out.println(sample[i] + " ");
+        }
+    }
+    
+    public static void displaySampleLineByLine(int[] sample) {
+        System.out.print("Sample: ");
+        for (int i = 0; i < sample.length; i++) {
+            System.out.println(sample[i] + " ");
+        }
+    }
+    
+    public static void displaySignalRange(double[] sample, int start, int end) {
+        for(int i = start; i <= end; i++) {
+            System.out.println(sample[i]);
+        }
+        System.out.println();
+    }
 
     public static boolean isPowerOf2(int n) {
         if (n < 1) {
@@ -65,8 +86,9 @@ public class Utils {
     }
     
     public static double[] largestSubsignalOfPowerOf2(double[] signal) {
-        if ( isPowerOf2(signal.length) )
+        if ( isPowerOf2(signal.length) ) {
             return signal;
+        }
         else {
             int i = largestPowerOf2NoGreaterThan(signal.length);
             if ( i == 0 ) return null;
@@ -140,26 +162,74 @@ public class Utils {
         return primDoubles;
     }
     
+    public static double computeMean(double[] signal) {
+        double mean = 0;
+        for(double x: signal) { mean += x; }
+        return mean/signal.length;
+    }
+    
+    public static double computeVariance(double[] signal) {
+        double mean = computeMean(signal);
+        double var = 0;
+        for(double x: signal) {
+            var += Math.pow(x - mean, 2.0);
+        }
+        return var/signal.length;
+    }
+    
+    public static double computeCorrectedVariance(double[] signal) {
+        double mean = computeMean(signal);
+        double var = 0;
+        for(double x: signal) {
+            var += Math.pow(x - mean, 2.0);
+        }
+        return var/(signal.length-1);
+    }
+    
+    public static double computeSTD(double[] signal) {
+        return Math.sqrt(computeVariance(signal));
+    }
+    
+    public static double computeCorrectedSTD(double[] signal) {
+        return Math.sqrt(computeCorrectedVariance(signal));
+    }
+    
+    public static double computeMeanInRange(double[] signal, int start, int end) {
+        double mean = 0;
+        for(int i = start; i <= end; i++) { mean += signal[i]; }
+        return mean/(end - start + 1);
+    }
+    
+    public static double computeVarianceInRange(double[] signal, int start, int end) {
+        double mean = computeMeanInRange(signal, start, end);
+        double var = 0;
+        for(int i = start; i <= end; i++) {
+            var += Math.pow(signal[i] - mean, 2.0);
+        }
+        return var/(end - start + 1);
+    }
+    
+    public static double computeCorrectedVarianceInRange(double[] signal, int start, int end) {
+        double mean = computeMeanInRange(signal, start, end);
+        double var = 0;
+        for(int i = start; i <= end; i++) {
+            var += Math.pow(signal[i] - mean, 2.0);
+        }
+        return var/(end - start);
+    }
+    
+    public static double computeSTDInRange(double[] signal, int start, int end) {
+        return Math.sqrt(computeVarianceInRange(signal, start, end));
+    }
+    
+    public static double computeCorrectedSTDInRange(double[] signal, int start, int end) {
+        return Math.sqrt(computeCorrectedVarianceInRange(signal, start, end));
+    }
+    
     public static void main(String[] args) {
-        double[] signal_1 = {1};
-        double[] signal_2 = {1, 2};
-        double[] signal_3 = {1, 2, 3};
-        double[] signal_4 = {1, 2, 3, 4};
-        double[] signal_11 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        
-        double[] signal_1c  = largestSubsignalOfPowerOf2(signal_1);
-        double[] signal_2c  = largestSubsignalOfPowerOf2(signal_2);
-        double[] signal_3c  = largestSubsignalOfPowerOf2(signal_3);
-        double[] signal_4c  = largestSubsignalOfPowerOf2(signal_4);
-        double[] signal_11c = largestSubsignalOfPowerOf2(signal_11);
-        
-        displaySample(signal_1c);
-        displaySample(signal_2c);
-        displaySample(signal_3c);
-        displaySample(signal_4c);
-        displaySample(signal_11c);
-        
-        System.out.println(largestPowerOf2NoGreaterThan(1323000));
+        double[] sig = {600, 470, 170, 430, 300};
+        System.out.println(computeVariance(sig));
+        System.out.println(computeSTD(sig));
     }
     
     
