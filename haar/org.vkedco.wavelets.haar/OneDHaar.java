@@ -457,27 +457,27 @@ public class OneDHaar {
         double a1 = 0;
         double[] restored_vals = null;
         int GAP = 0;
-        int j = 0;
+        //int j = 0;
         for (int L = 1; L <= n; L++) {
             GAP = (int) (Math.pow(2.0, L - 1)); // GAP b/w averages and coefficients at level L
-            //System.out.println("GAP == " + GAP);
+            System.out.println("GAP == " + GAP);
             restored_vals = null;
             restored_vals = new double[2 * GAP]; // restored values at level L
             for (int i = 0; i < GAP; i++) {
                 a0 = sample[i] + sample[GAP + i];
                 a1 = sample[i] - sample[GAP + i];
-                //System.out.println("a0 = " + "sample[" + i + "] + sample[" + GAP + "]");
-                //System.out.println("a1 = " + "sample[" + i + "] - sample[" + GAP + "]");
+                System.out.println("a0 = " + "sample[" + i + "] + sample[" + GAP + "]");
+                System.out.println("a1 = " + "sample[" + i + "] - sample[" + GAP + "]");
                 restored_vals[2 * i] = a0;
                 restored_vals[2 * i + 1] = a1;
-                //System.out.println("restoredVals[" + (2 * i) + "] = " + a0);
-                //System.out.println("restoredVals[" + (2 * i + 1) + "] = " + a1);
+                System.out.println("restoredVals[" + (2 * i) + "] = " + a0);
+                System.out.println("restoredVals[" + (2 * i + 1) + "] = " + a1);
             }
             // copy restoredVals[0],   restoredVals[1], ...,  restoredVals[2*GAP-1] into
             //      sample[0], sampe[1], ..., sample[2*GAP-1]
             System.arraycopy(restored_vals, 0, sample, 0, 2 * GAP);
-            //System.out.print("L == " + L + " ");
-            //OneDHaar.displaySample(sample);
+            System.out.print("L == " + L + " ");
+            OneDHaar.displaySample(sample);
         }
     }
     
@@ -500,11 +500,12 @@ public class OneDHaar {
         double a0 = 0;
         double a1 = 0;
         double[] restoredVals = null;
-        int GAP = 0;
+        //int GAP = 0;
+        int GAP = (int)(Math.pow(2.0, (n - numIters)));
         int j = 0;
         //System.out.println("START ***************");
         for (int L = 1; L <= numIters; L++) {
-            GAP = (int) (Math.pow(2.0, L-1)); // GAP b/w averages and coefficients at level L
+            //GAP = (int) (Math.pow(2.0, L-1)); // GAP b/w averages and coefficients at level L
             //System.out.println("GAP == " + GAP);
             restoredVals = null;
             restoredVals = new double[2 * GAP]; // restored values at level L
@@ -932,3 +933,5 @@ public class OneDHaar {
         return inversed_v;
     }
 }
+
+
