@@ -20,7 +20,7 @@ public class Utils {
     public static void displaySample(double[] sample) {
         System.out.print("Sample: ");
         for (int i = 0; i < sample.length; i++) {
-            System.out.print(sample[i] + " ");
+            System.out.printf("%5.2f ", sample[i]);
         }
         System.out.println();
     }
@@ -64,8 +64,13 @@ public class Utils {
     }
     
     // if n = 2^x; this method returns x
-    public static int powVal(int n) {
+    public static int wholeLog2(int n) {
         return (int)(Math.log(n)/Math.log(2));
+    }
+    
+    // if n = 2^x; this method returns x
+    public static double log2(int n) {
+        return (Math.log(n)/Math.log(2));
     }
     
     public static int largestPowerOf2NoGreaterThan(int i) {
@@ -166,6 +171,30 @@ public class Utils {
         double mean = 0;
         for(double x: signal) { mean += x; }
         return mean/signal.length;
+    }
+    
+    public static double computeMean(double[][] signal) {
+        double mean = 0;
+        int num_rows = signal.length;
+        int num_cols = signal[0].length;
+        for(int r = 0; r < num_rows; r++) {
+            for(int c = 0; c < num_cols; c++) {
+                mean += signal[r][c];
+            }
+        }
+        return mean/(num_rows*num_cols);
+    }
+    
+    public static double computeMean(double[][] signal, 
+            int from_row, int upto_row, int from_col, int upto_col) {
+        //System.out.println("from_row = " + from_row + " upto_row = " + upto_row);
+        //System.out.println("from_col = " + from_col + " upto_col = " + upto_col);
+        double mean = 0;
+        for(int r = from_row; r <= upto_row; r++) {
+            for(int c = from_col; c <= upto_col; c++)
+            mean += signal[r][c];
+        }
+        return mean/((upto_row - from_row + 1)*(upto_col - from_col + 1));
     }
     
     public static double computeVariance(double[] signal) {
