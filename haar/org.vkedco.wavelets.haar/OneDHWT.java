@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import org.vkedco.wavelets.utils.Utils;
 
 /**
  * ============================================================================
@@ -19,6 +20,8 @@ import java.util.ArrayList;
  * 
  * Ch. 01 of "Wavelets Made Easy" by Yves Nievergelt & "Ripples in Mathematics" by
  * A. Jensen, A. La Cour-Harbo.
+ * 
+ * Bugs to vladimir dot kulyukin at gmail dot com
  * ============================================================================
  */
 public class OneDHWT {
@@ -915,7 +918,7 @@ public class OneDHWT {
     
     // compute 2^n x 2^n matrix for the forward haar transform
     public static double[][] computeFHWTMatrix(int n) {
-        int size = (int) Math.pow(2, n);
+        final int size = (int) Math.pow(2, n);
         double[] base_vector = new double[size];
         double[][] fhw = new double[size][size];
         for(int col_num = 0; col_num < size; col_num++) {
@@ -936,7 +939,7 @@ public class OneDHWT {
     
     // compute 2^n x 2^n matrix for the inverse haar transform
     public static double[][] computeInvFHWTMatrix(int n) {
-        int size = (int) Math.pow(2, n);
+        final int size = (int) Math.pow(2, n);
         double[] base_vector = new double[size];
         double[][] ihw = new double[size][size];
         for(int col_num = 0; col_num < size; col_num++) {
@@ -953,6 +956,23 @@ public class OneDHWT {
         }
         
         return ihw;
+    }
+    
+    public static double[][] computeNormFHWTMatrix(int n) {
+        double[][] m = computeFHWTMatrix(n);
+        final int size = (int) Math.pow(2, n);
+        double[] row = new double[size];
+        double norm = 0.0;
+        for(int r = 0; r < size; r++) {
+            for(int c = 0; c < size; c++) {
+                row[c] = m[r][c];
+            }
+            norm = OneDHWT.normOf(row);
+            for(int c = 0; c < size; c++) {
+                m[r][c] /= norm; 
+            }
+        }
+        return m;
     }
     
     // apply 2^n x 2^n haar transform matrix (forward or inverse) to 2^n input signal v.
@@ -974,6 +994,33 @@ public class OneDHWT {
         }
         return inversed_v;
     }
+    
+    public static double energyOf(double[] sig) {
+        double enrgy = 0.0;
+        for(double s: sig) {
+            enrgy += s*s;
+        }
+        return enrgy;
+    }
+    
+    public static double normOf(double[] sig) {
+        return Math.sqrt(OneDHWT.energyOf(sig));
+    }
+    
+    public static void main(String[] args)
+    {
+        double[] sig1 = {1, 1, 1, 1, 1, 1, 1, 1};
+        double[] sig2 = {1, 0, 0, 0, 0, 0, 0, 0};
+        System.out.println(OneDHWT.normOf(sig1));
+        System.out.println(Math.sqrt(8));
+        OneDHWT.ordInvFHWT(sig2);
+        Utils.displaySample(sig2);
+        System.out.println(OneDHWT.normOf(sig2));
+        System.out.println("***");
+        System.out.println(Math.pow(2, 1.5));
+    }
+    
+    
 }
 
 
